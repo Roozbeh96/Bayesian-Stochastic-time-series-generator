@@ -1,0 +1,470 @@
+function [Obj,ii,iii,z_prog, z_retro, pr, rt, xi, xii] = lambdacivorX(Obj,i,ii,iii,S,xcs,zcs,rot,rwOlambda_T_near,rwOlambda_T_Far,...
+                        delUwOu_tau_near,delUwOu_tau_Far, z_prog, z_retro, pr, rt, N, C1, C2,rho_Near_wall,xi,...
+                        rho_Far_wall, xii, R1, R2)
+
+if size(delUwOu_tau_near,1)~=1
+    if zcs(i)<= 2*Obj.ks        
+        if rot(i)<0
+            r_omega = rwOlambda_T_near(ii)*Obj.Delx;
+            Gama=2*pi*delUwOu_tau_near(ii)*Obj.u_tau*r_omega/(1-exp(-1));
+        else
+            r_omega = 1/1.1*rwOlambda_T_near(ii)*Obj.Delx;
+            Gama=2*pi*1/1.1*delUwOu_tau_near(ii)*Obj.u_tau*r_omega/(1-exp(-1));
+        end
+        ii = ii + 1;
+    else
+        if rot(i)<0
+            r_omega = rwOlambda_T_Far(iii)*Obj.Delx;
+            Gama=2*pi*delUwOu_tau_Far(iii)*Obj.u_tau*r_omega/(1-exp(-1));
+        else
+            r_omega = 1/1.1*rwOlambda_T_Far(iii)*Obj.Delx;
+            Gama=2*pi*1/1.1*delUwOu_tau_Far(iii)*Obj.u_tau*r_omega/(1-exp(-1));
+        end
+        iii = iii + 1;
+    end
+else %% find the r_omega that is correlated with the u_omega(Add vortices on the center of the shear layer)
+    if zcs<= 2*Obj.ks
+        rdelUw_near = (exp(-0.5/0.5)-exp(-delUwOu_tau_near(1)/0.5))/(exp(-0.5/0.5)-exp(-4.5/0.5));
+        
+        if rdelUw_near>=0.99
+            rdelUw_near = 0.99;
+        elseif rdelUw_near<=0.01
+            rdelUw_near = 0.01;
+        end
+        
+%         rdelUw_near = round(rdelUw_near, 2);
+        Z1 = norminv(min(max(rdelUw_near, eps), 1-eps), 0, 1);
+        W = randn;
+        Z2 = R1 * Z1 + sqrt(1 - R1^2) * W;
+        rrw_near = normcdf(Z2, 0, 1);
+        
+        if rrw_near>=0.99
+            rrw_near = 0.99;
+        elseif rrw_near<=0.01
+            rrw_near = 0.01;
+        end
+%         rrw_near = round(rrw_near, 2);
+        
+        F_xt = 0.92;%normcdf((log(0.3935) - (-1.4321)) / 0.3458); % Log-normal CDF at x_t
+            
+        if rrw_near <= F_xt
+            rwOlambda_T_near = exp(-1.54 + 0.35 * norminv(rrw_near));
+        else
+            rwOlambda_T_near = 0.35 * (1 - (rrw_near - F_xt) / (1 - F_xt)).^(-1 / 5);
+        end
+        
+        r_omega = rwOlambda_T_near(1)*Obj.Delx;
+%         r_omega = rwOlambda_T_near(ii)*Obj.Delx;
+        Gama=2*pi*delUwOu_tau_near(1)*Obj.u_tau*r_omega/(1-exp(-1));
+%         ii = ii + 1;
+    else
+        rdelUw_Far = (exp(-0.5/0.37)-exp(-delUwOu_tau_Far(1)/0.37))/(exp(-0.5/0.37)-exp(-4.5/0.37));
+        
+        if rdelUw_Far>=0.99
+            rdelUw_Far = 0.99;
+        elseif rdelUw_Far<=0.01
+            rdelUw_Far = 0.01;
+        end
+%         rdelUw_Far = round(rdelUw_Far, 2);
+        
+        Z1 = norminv(min(max(rdelUw_Far, eps), 1-eps), 0, 1);
+        W = randn;
+        Z2 = R2 * Z1 + sqrt(1 - R2^2) * W;
+        rrw_Far = normcdf(Z2, 0, 1);
+        
+        if rrw_Far>=0.99
+            rrw_Far = 0.99;
+        elseif rrw_Far<=0.01
+            rrw_Far = 0.01;
+        end
+%         rrw_Far = round(rrw_Far, 2);
+        
+        F_xt = 0.93;%normcdf((log(0.2721) - (-1.8436)) / 0.3720); % Log-normal CDF at x_t
+            
+        if rrw_Far <= F_xt
+            rwOlambda_T_Far = exp(-1.93 + 0.36 * norminv(rrw_Far));
+        else
+            rwOlambda_T_Far = 0.24 * (1 - (rrw_Far - F_xt) / (1 - F_xt)).^(-1 / 4.5);
+        end
+        r_omega = rwOlambda_T_Far(1)*Obj.Delx;
+%         r_omega = rwOlambda_T_Far(iii)*Obj.Delx;
+        Gama=2*pi*delUwOu_tau_Far(1)*Obj.u_tau*r_omega/(1-exp(-1));
+%         iii = iii + 1;
+    end
+end
+
+% if Obj.HRVFz(1)>=zcs(i)-N*r_omega
+%     r_omega = zcs(i)-Obj.HRVFz(1);
+% end
+% 
+% if Obj.HRVFz(end)<=zcs(i)+N*r_omega
+%     r_omega = Obj.HRVFz(end)-zcs(i);
+% end
+
+if zcs(i)<= 2*Obj.ks
+%     if rho_Near_wall>1
+%         rho_Near_wall = 1;
+%     end
+%     if rho_Near_wall<-1
+%         rho_Near_wall = -1;
+%     end
+    Trans = [1, rho_Near_wall; 0, sqrt(1 - rho_Near_wall^2)];    
+    xi= xi+1;
+else
+%     if rho_Far_wall>1
+%         rho_Far_wall = 1;
+%     end
+%     if rho_Far_wall<-1
+%         rho_Far_wall = -1;
+%     end
+    Trans = [1, rho_Far_wall; 0, sqrt(1 - rho_Far_wall^2)];
+    xii = xii+1;
+end
+% Trans = [1, -0.4; 0, sqrt(1 - 0.4^2)];
+% value of the N should be calculated based on the
+% r_omega(it should be dissipated) but here is random
+% between 1 to 10
+
+[indz] = find(Obj.HRVFz>=zcs(i)-N*r_omega &...
+    Obj.HRVFz<=zcs(i)+N*r_omega);
+[indx] = find(Obj.HRVFx>=xcs(i)-N*r_omega &...
+    Obj.HRVFx<=xcs(i)+N*r_omega);
+[X,Z] = meshgrid(Obj.HRVFx(indx),Obj.HRVFz(indz));
+r = sqrt((X-xcs(i)).^2+(Z-zcs(i)).^2);
+r(r>N*r_omega)=0;
+
+if size(r,1)==1
+    return
+end
+
+
+uazi=Gama./(2*pi*r).*(1-exp(-r.^2./r_omega^2));
+nan_logical_array = isnan(uazi);
+[nan_indices] = find(nan_logical_array);
+uazi(nan_indices) = 0;
+
+Theta = atan2((Z-zcs(i)),(X-xcs(i)));
+nan_logical_array = isnan(Theta);
+[nan_indices] = find(nan_logical_array);
+Theta(nan_indices) = 0;
+
+mask1 = (Theta >= 0 & Theta < pi/2 & r~=0) ;
+
+mask2 =(Theta >= pi/2 & Theta <= pi+0.1 & r~=0);
+
+mask3 =((Theta >= -pi & Theta <= -pi/2 & r~=0));
+
+mask4 = (Theta >= -pi/2 & Theta <= 0 & r~=0) ;
+
+% r_normalized = r / max(r(:));
+% cmap1 = getPyPlot_cMap('Reds_r', 8,[],...
+%     '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+% cmap1(end-1:end,:)=[];
+% cmap2 = getPyPlot_cMap('Greens_r', 8, [],...
+%     '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+% cmap2(end-1:end,:)=[];
+% cmap3 = getPyPlot_cMap('Blues_r', 8, [],...
+%     '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+% cmap3(end-1:end,:)=[];
+% cmap4 = getPyPlot_cMap('Wistia_r', 6, [],...
+%     '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+% color_indices1 = round((1-r_normalized) * (size(cmap1, 1)/1 - 1)) + 1;
+% color_indices2 = round((1-r_normalized) * (size(cmap2, 1)/1 - 1)) + 1;
+% color_indices3 = round((1-r_normalized) * (size(cmap3, 1)/1 - 1)) + 1;
+% color_indices4 = round((1-r_normalized) * (size(cmap4, 1)/1 - 1)) + 1;
+%
+%                     figure
+%                     set(gcf,'Position',[1291,520,540,450])
+%
+%                     scatter((X(mask1)-xcs(i))/r_omega, (Z(mask1)-zcs(i))/r_omega...
+%                         , 10, cmap1(color_indices1(mask1), :), 'filled');
+%                     hold on
+%                     scatter((X(mask2)-xcs(i))/r_omega, (Z(mask2)-zcs(i))/r_omega,...
+%                         10, cmap2(color_indices2(mask2), :), 'filled');
+%                     scatter((X(mask3)-xcs(i))/r_omega, (Z(mask3)-zcs(i))/r_omega,...
+%                         10, cmap3(color_indices3(mask3), :), 'filled');
+%                     scatter((X(mask4)-xcs(i))/r_omega, (Z(mask4)-zcs(i))/r_omega,...
+%                         10, cmap4(color_indices4(mask4), :), 'filled');
+%                     set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on',...
+%                         'YGrid','on')
+%                     xlabel('x/$r_{\omega}$','Interpreter','Latex','FontSize',14);
+%                     ylabel('z/$r_{\omega}$','Interpreter','Latex','FontSize',14);
+%                     axis equal
+%                     xlim([-2.2 2.2])
+%                     ylim([-2.2 2.2])
+%                     box on
+%                     Theta_t = pi / 10;
+%                     mask1 = (Theta > -Theta_t & Theta < Theta_t) ;
+%
+%                     mask2 =(Theta > pi-Theta_t);
+%
+%                     mask3 =(Theta > pi/2-Theta_t & Theta < pi/2+Theta_t);
+%
+%                     mask4 = (Theta > -pi/2-Theta_t & Theta < -pi/2+Theta_t) ;
+%
+%                     mask5 = (Theta < -pi+Theta_t);
+%
+%                     % being prograde or retrograde also can be stochastic
+%                     % for prograde
+% %                     prograd = logical(binornd(1, 0.5));
+%                     uazi_aug = zeros(size(Theta));
+%                     uazi_aug(mask1) = abs(2 * cos(pi * Theta(mask1) / (2 * Theta_t)));
+%                     uazi_aug(mask2) = abs(2 * cos(pi * (Theta(mask2)-pi) / (2 * Theta_t)));
+%                     uazi_aug(mask3) = abs(2 * cos(pi * (Theta(mask3)-pi/2) / (2 * Theta_t)));
+%                     uazi_aug(mask4) = abs(2 * cos(pi * (Theta(mask4)+pi/2) / (2 * Theta_t)));
+%                     uazi_aug(mask5) = abs(2 * cos(pi * (Theta(mask5)+pi) / (2 * Theta_t)));
+
+if rot(i)<0
+    z_prog(pr,1) = zcs(i);
+    pr = pr +1;
+    u_vor = uazi.*sin(Theta);
+    w_vor = -uazi.*cos(Theta);
+    A1 = zeros(size(w_vor(mask1),1),2);
+    A2 = zeros(size(w_vor(mask2),1),2);
+    A3 = zeros(size(w_vor(mask3),1),2);
+    A4 = zeros(size(w_vor(mask4),1),2);
+    A1(:,1) = u_vor(mask1);
+    A1(:,2) = w_vor(mask1);
+    A2(:,1) = u_vor(mask2);
+    A2(:,2) = w_vor(mask2);
+    A3(:,1) = u_vor(mask3);
+    A3(:,2) = w_vor(mask3);
+    A4(:,1) = u_vor(mask4);
+    A4(:,2) = w_vor(mask4);
+    
+    %                         figure
+    %                         set(gcf,'Position',[1291,520,540,450])
+    %                         scatter(w_vor(mask1)/Obj.u_tau, u_vor(mask1)/Obj.u_tau...
+    %                             , 10, cmap1(color_indices1(mask1), :), 'filled');
+    %                         hold on
+    %                         scatter(w_vor(mask2)/Obj.u_tau, u_vor(mask2)/Obj.u_tau...
+    %                             , 10, cmap2(color_indices2(mask2), :), 'filled');
+    %                         scatter(w_vor(mask3)/Obj.u_tau, u_vor(mask3)/Obj.u_tau...
+    %                             , 10, cmap3(color_indices3(mask3), :), 'filled');
+    %                         scatter(w_vor(mask4)/Obj.u_tau, u_vor(mask4)/Obj.u_tau...
+    %                             , 10, cmap4(color_indices4(mask4), :), 'filled');
+    %                         set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on',...
+    %                             'YGrid','on')
+    %                         xlabel('w/$u_{\tau}$','Interpreter','Latex','FontSize',14);
+    %                         ylabel('u/$u_{\tau}$','Interpreter','Latex','FontSize',14);
+    %                         axis equal
+    %                         xlim([-0.8 0.8])
+    %                         ylim([-0.8 0.8])
+    %                         box on
+    B1 = A1* Trans;
+    B2 = A2* Trans;
+    B3 = A3* Trans;
+    B4 = A4* Trans;
+    u_vor_trans = zeros(size(u_vor));
+    w_vor_trans = zeros(size(w_vor));
+    u_vor_trans(mask1) = B1(:,1);%%any coefficient should be multiplied here
+    w_vor_trans(mask1) = B1(:,2);
+    
+    u_vor_trans(mask2) = B2(:,1);
+    w_vor_trans(mask2) = B2(:,2);
+    
+    u_vor_trans(mask3) = B3(:,1);
+    w_vor_trans(mask3) = B3(:,2);
+    
+    u_vor_trans(mask4) = B4(:,1);
+    w_vor_trans(mask4) = B4(:,2);
+    
+%     figure
+%     set(gcf,'Position',[1291,520,540,450])
+%     scatter(B1(:,1)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau), B1(:,2)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau)...
+%         , 10, cmap1(color_indices1(mask1), :), 'filled');
+%     hold on
+%     scatter(B2(:,1)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau), B2(:,2)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau)...
+%         , 10, cmap2(color_indices2(mask2), :), 'filled');
+%     scatter(B3(:,1)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau), B3(:,2)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau)...
+%         , 10, cmap3(color_indices3(mask3), :), 'filled');
+%     scatter(B4(:,1)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau), B4(:,2)/(0.5*delUwOu_tau(ii-1)*Obj.u_tau)...
+%         , 10, cmap4(color_indices4(mask4), :), 'filled');
+%     set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on',...
+%         'YGrid','on')
+%     text(0, 0, 'Alo', 'FontSize', 12, 'Rotation', 45, ...
+%     'HorizontalAlignment', 'center', 'BackgroundColor', 'white');
+%     xlabel('u/$u_{\omega}$','Interpreter','Latex','FontSize',14);
+%     ylabel('w/$u_{\omega}$','Interpreter','Latex','FontSize',14);
+%     axis equal
+%     xlim([-1.2 1.2])
+%     ylim([-1.2 1.2])
+%     box on
+    
+    %                         figure
+    %                         Gammaoseen = sqrt(u_vor.^2+w_vor.^2)*2*pi.*r./(1-exp(-r.^2./r_omega^2));
+    %                         Gammatrans = sqrt(u_vor_trans.^2+w_vor_trans.^2)*2*pi.*r./(1-exp(-r.^2./r_omega^2));
+    %                         contourf((X-xcs(i))./r_omega,...
+    %                             (Z-zcs(i))./r_omega,...
+    %                             Gammatrans-Gammaoseen...
+    %                             ,50,'LineStyle','none',...
+    %                             'LineColor','none','EdgeColor','none');
+    %                         % cmap2 = plasma(100);
+    % %                         cmap2 = crameri('turku',100);
+    %                         cmap2 = getPyPlot_cMap('RdGy_r', [], [],...
+    %                             '"C:\Users\ehsan010\Anaconda3\envs\General\python.exe"');
+    % %                         cmap2 = flip(cmap2);
+    %                         colormap(gca,cmap2)
+    %                         % C2=cmap2;
+    %                         % C3=[0,0,0;C2;1,1,1];
+    %                         caxis([-0.003 0.003])
+    %                         % C3 = flip(C3);
+    %                         % colormap(gca,C3)
+    %                         hcb2=colorbar;
+    %                         % hcb2.Position=[0.954656862745097,0.407407407407417,0.01593137254902,0.229885057471265];
+    %                         title(hcb2,'$\Gamma(Trans)$-$\Gamma(Oseen)$','Interpreter','Latex','FontSize',15)...,'Position',...
+    %                         %     [4.999994333833513,142.5300008152491,0]);
+    %                         hcb2.TickLabelInterpreter = 'latex';
+    %                         hcb2.TickLength = 0;
+    %                         hcb2.Label.Interpreter = 'latex';
+    %                         hcb2.AxisLocation='out';
+    %                         set(gca,'TickLabelInterpreter','latex','FontSize',13,...
+    %                             'XGrid','on','YGrid','on')
+    %                         xlabel('x/r$_{\omega}$','Interpreter','Latex','FontSize',14);
+    %                         ylabel('z/r$_{\omega}$','Interpreter','Latex','FontSize',14);
+    %                         axis equal
+    %                         %xlim([-2.2 2.2])
+    %                         %ylim([-2.2 2.2])
+    %
+%     figure
+%     plot(B1(:,1),B1(:,2),'r.')
+%     hold on
+%     plot(B2(:,1),B2(:,2),'r.')
+%     plot(B3(:,1),B3(:,2),'r.')
+%     plot(B4(:,1),B4(:,2),'r.')
+%     set(gca,'TickLabelInterpreter','latex','FontSize',13,...
+%         'XGrid','on','YGrid','on')
+%     xlabel('u','Interpreter','Latex','FontSize',14);
+%     ylabel('w','Interpreter','Latex','FontSize',14);
+%     axis equal
+%     xlim([-0.3 0.3])
+%     ylim([-0.3 0.3])
+% %     
+%     figure
+%     rcirc = 1; % Radius of the circle
+%     center_x = 0; % X-coordinate of the circle center
+%     center_y = 0; % Y-coordinate of the circle center
+% 
+%     % Generate points for the circle
+%     theta = linspace(0, 2*pi, 100); % Angle from 0 to 2*pi
+%     x = center_x + rcirc * cos(theta); % X-coordinates
+%     y = center_y + rcirc * sin(theta); % Y-coordinates
+% 
+%     quiver((X(1:2:end,1:2:end)-xcs(i))./r_omega,...
+%         (Z(1:2:end,1:2:end)-zcs(i))./r_omega,...
+%         u_vor_trans(1:2:end,1:2:end),w_vor_trans(1:2:end,1:2:end)...
+%         ,2,'color',[0.79,0.56,0.01],...
+%         'MaxHeadSize',0.2,'LineWidth',1.5);
+%     hold on
+%     plot(x, y, 'r-', 'LineWidth', 2);
+%     annotation(gcf,'doublearrow',[0.246492985971943 0.303607214428857],...
+%     [0.778043280182232 0.838268792710706],'Head1Width',7,'Head1Style','ellipse',...
+%     'Head1Length',7,'color','r');
+%     set(gca,'TickLabelInterpreter','latex','FontSize',13,...
+%         'XGrid','off','YGrid','off')
+%     xlabel('x/r$_{\omega}$','Interpreter','Latex','FontSize',14);
+%     ylabel('z/r$_{\omega}$','Interpreter','Latex','FontSize',14);
+%     axis equal
+%     xlim([-2.2 2.2])
+%     ylim([-2.2 2.2])
+    
+else
+  
+    z_retro(rt,1) = zcs(i);
+    rt = rt+1;
+    u_vor = -uazi.*sin(Theta);
+    w_vor = uazi.*cos(Theta);
+    A1 = zeros(size(w_vor(mask1),1),2);
+    A2 = zeros(size(w_vor(mask2),1),2);
+    A3 = zeros(size(w_vor(mask3),1),2);
+    A4 = zeros(size(w_vor(mask4),1),2);
+    A1(:,1) = u_vor(mask1);
+    A1(:,2) = w_vor(mask1);
+    A2(:,1) = u_vor(mask2);
+    A2(:,2) = w_vor(mask2);
+    A3(:,1) = u_vor(mask3);
+    A3(:,2) = w_vor(mask3);
+    A4(:,1) = u_vor(mask4);
+    A4(:,2) = w_vor(mask4);
+    
+    %                         figure
+    %                         set(gcf,'Position',[1291,520,540,450])
+    %                         scatter(w_vor(mask1)/Obj.u_tau, u_vor(mask1)/Obj.u_tau...
+    %                             , 10, cmap1(color_indices1(mask1), :), 'filled');
+    %                         hold on
+    %                         scatter(w_vor(mask2)/Obj.u_tau, u_vor(mask2)/Obj.u_tau...
+    %                             , 10, cmap2(color_indices2(mask2), :), 'filled');
+    %                         scatter(w_vor(mask3)/Obj.u_tau, u_vor(mask3)/Obj.u_tau...
+    %                             , 10, cmap3(color_indices3(mask3), :), 'filled');
+    %                         scatter(w_vor(mask4)/Obj.u_tau, u_vor(mask4)/Obj.u_tau...
+    %                             , 10, cmap4(color_indices4(mask4), :), 'filled');
+    %                         set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on',...
+    %                             'YGrid','on')
+    %                         xlabel('w/$u_{\tau}$','Interpreter','Latex','FontSize',14);
+    %                         ylabel('u/$u_{\tau}$','Interpreter','Latex','FontSize',14);
+    %                         axis equal
+    %                         xlim([-0.8 0.8])
+    %                         ylim([-0.8 0.8])
+    %                         box on
+    
+    B1 = A1* Trans;
+    B2 = A2* Trans;
+    B3 = A3* Trans;
+    B4 = A4* Trans;
+    u_vor_trans = zeros(size(u_vor));
+    w_vor_trans = zeros(size(w_vor));
+    u_vor_trans(mask1) = B1(:,1);
+    w_vor_trans(mask1) = B1(:,2);
+    
+    u_vor_trans(mask2) = B2(:,1);
+    w_vor_trans(mask2) = B2(:,2);
+    
+    u_vor_trans(mask3) = B3(:,1);
+    w_vor_trans(mask3) = B3(:,2);
+    
+    u_vor_trans(mask4) = B4(:,1);
+    w_vor_trans(mask4) = B4(:,2);
+    
+    %                         figure
+    %                         set(gcf,'Position',[1291,520,540,450])
+    %                         scatter(B1(:,2)/Obj.u_tau, B1(:,1)/Obj.u_tau...
+    %                             , 10, cmap1(color_indices1(mask1), :), 'filled');
+    %                         hold on
+    %                         scatter(B2(:,2)/Obj.u_tau, B2(:,1)/Obj.u_tau...
+    %                             , 10, cmap2(color_indices2(mask2), :), 'filled');
+    %                         scatter(B3(:,2)/Obj.u_tau, B3(:,1)/Obj.u_tau...
+    %                             , 10, cmap3(color_indices3(mask3), :), 'filled');
+    %                         scatter(B4(:,2)/Obj.u_tau, B4(:,1)/Obj.u_tau...
+    %                             , 10, cmap4(color_indices4(mask4), :), 'filled');
+    %                         set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on',...
+    %                             'YGrid','on')
+    %                         xlabel('w/$u_{\tau}$','Interpreter','Latex','FontSize',14);
+    %                         ylabel('u/$u_{\tau}$','Interpreter','Latex','FontSize',14);
+    %                         axis equal
+    %                         xlim([-0.8 0.8])
+    %                         ylim([-0.8 0.8])
+    %                         box on
+%         figure
+%         quiver((X(1:2:end,1:2:end)-xcs(i))./r_omega,...
+%             (Z(1:2:end,1:2:end)-zcs(i))./r_omega,...
+%             u_vor_trans(1:2:end,1:2:end),w_vor_trans(1:2:end,1:2:end)...
+%             ,2,'color',[1.00,0.00,0.00],...
+%             'MaxHeadSize',0.2,'LineWidth',1.5);
+%         set(gca,'TickLabelInterpreter','latex','FontSize',13,...
+%             'XGrid','on','YGrid','on')
+%         xlabel('x/r$_{\omega}$','Interpreter','Latex','FontSize',14);
+%         ylabel('z/r$_{\omega}$','Interpreter','Latex','FontSize',14);
+%         axis equal
+%         xlim([-2.2 2.2])
+%         ylim([-2.2 2.2])
+
+end
+    if isempty(u_vor_trans)
+        return
+    end
+Obj.HRVFu(indz,indx,S) = Obj.HRVFu(indz,indx,S)+ C1*u_vor_trans;
+%                     Obj.HRVFuprime(indz,indx,S) = Obj.HRVFuprime(indz,indx,S)+ u_vor_trans;
+Obj.HRVFw(indz,indx,S) = Obj.HRVFw(indz,indx,S)+ C2*w_vor_trans;
+
+end
+
