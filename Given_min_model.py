@@ -24,10 +24,6 @@ class MDN(nn.Module):
             nn.Linear(32, 32),
             nn.ReLU(),
             nn.Linear(32, 32),
-            nn.ReLU(),
-            nn.Linear(32, 32),
-            nn.ReLU(),
-            nn.Linear(32, 32),
             nn.ReLU()
         )
         self.pi_layer = nn.Linear(32, num_gaussians)  # Mixing coefficients
