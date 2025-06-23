@@ -38,7 +38,7 @@ class MDN(nn.Module):
         return pi, mu, sigma
     
 Given_max_model = MDN(1,1,5)
-Given_max_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_max_model.pth'))
+Given_max_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_max_model_short.pth'))
 
 Given_max_model.eval()
 

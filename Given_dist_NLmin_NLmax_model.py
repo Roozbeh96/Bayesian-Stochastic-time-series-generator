@@ -38,7 +38,7 @@ class MDN(nn.Module):
         return pi, mu, sigma
     
 Given_dist_NLmin_NLmax_model = MDN(1,1,5)
-Given_dist_NLmin_NLmax_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_dist_NLmin_NLmax_model.pth'))
+Given_dist_NLmin_NLmax_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_dist_NLmin_NLmax_model_short.pth'))
 
 Given_dist_NLmin_NLmax_model.eval()
 
