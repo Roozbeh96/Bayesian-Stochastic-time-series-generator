@@ -147,7 +147,7 @@ VF_GenWT7.Twop_corr(0.05)
 %% Saving
 save('C:\Users\ehsan010\Desktop\VF_GenWT7(Beforepassingkernelres32makima-2).mat','VF_GenWT7')
 save('C:\Users\ehsan010\Desktop\VF_GenWT10(Beforepassingkernelres25makima-2).mat','VF_GenWT10')
-save('C:\Users\ehsan010\Desktop\VF_GenASL(Beforepassingkernelres20makima-2).mat','VF_GenASL')
+save('C:\Users\ehsan010\Desktop\VF_GenASL(Beforepassingkernelres20makima-raw).mat','VF_GenASL')
 VF_PIVWT7 = struct(VF_PIVWT7);
 save('VF_PIVWT7.mat','VF_PIVWT7')
 save('VF_PIVWT10.mat','VF_PIVWT10')

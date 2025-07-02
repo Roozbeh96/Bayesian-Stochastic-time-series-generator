@@ -11,6 +11,10 @@ clear('Data6')
 Data8 = load('VF_SLPIVASL.mat');
 VF_SLPIVASL = Data8.VF_SLPIVASL;
 clear('Data8')
+
+Data9 = load('VF_SonicASL.mat');
+VF_SonicASL = Data9.VF_SonicASL;
+clear('Data9')
 %% Long decomposition
 VF_HotWT7uprimelong = VF_HotWT7.u - mean(VF_HotWT7.u,2);
 VF_HotWT7wprimelong = VF_HotWT7.w;
@@ -81,8 +85,8 @@ C = zeros();
 % set(gcf,'Position',[814,534,806,379])
 % axes('Position',[0.064516129032258,0.12664907651715,0.915632754342432,0.798350923482849])
 
-l0WT7 = 0.3;
-l0WT10 = 0.3;
+l0WT7 = 0.7;%0.3
+l0WT10 = 0.7;%0.3
 l0ASL = 0.72;
 
 c0WT7 = 3;
@@ -91,8 +95,8 @@ c0ASL = 3;
 
 for z = 1: size(VF_HotWT7.z,1)
     
-    ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
-%     ratio_WT7= X_domain_WT7(z,:) / l0WT7;
+%     ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
+    ratio_WT7= X_domain_WT7(z,:) / l0WT7;
     unitindex_WT7 = find(ratio_WT7 >= 1, 1, 'first');
     unitindex_WT7 = unitindex_WT7 - 1;
     
@@ -160,8 +164,8 @@ end
 
 for z = 1: size(VF_HotWT10.z,1)
     
-    ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
-%     ratio_WT10 = X_domain_WT10(z,:) / l0WT10;
+%     ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
+    ratio_WT10 = X_domain_WT10(z,:) / l0WT10;
     unitindex_WT10 = find(ratio_WT10 >= 1, 1, 'first');
     unitindex_WT10 = unitindex_WT10 - 1;
     
@@ -232,8 +236,8 @@ value_pairs_cell_HotWT7 = cell(size(VF_HotWT7.z,1), 1);
 
 for z = 1:size(VF_HotWT7.z,1)
     
-    ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
-%     ratio_WT7= X_domain_WT7(z,:) / l0WT7;
+%     ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
+    ratio_WT7= X_domain_WT7(z,:) / l0WT7;
     unitindex_WT7 = find(ratio_WT7 >= 1, 1, 'first');
     unitindex_WT7 = unitindex_WT7 - 1;
     % Initialize an empty matrix for storing value pairs at this elevation
@@ -289,8 +293,8 @@ value_pairs_cell_HotWT10 = cell(size(VF_HotWT10.z,1), 1);
 
 for z = 1:size(VF_HotWT10.z,1)
     
-    ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
-%     ratio_WT10 = X_domain_WT10(z,:) / l0WT10;
+%     ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
+    ratio_WT10 = X_domain_WT10(z,:) / l0WT10;
     unitindex_WT10 = find(ratio_WT10 >= 1, 1, 'first');
     unitindex_WT10 = unitindex_WT10 - 1;
     % Initialize an empty matrix for storing value pairs at this elevation
@@ -423,6 +427,7 @@ save('value_pairs_cell_SLPIVASL.mat','value_pairs_cell_SLPIVASL')
 
 
 load('value_pairs_cell_SLPIVASL.mat')
+
 
 %% ploting ( WT7,WT10)
     
@@ -812,8 +817,8 @@ duNN_HotWT7 = cell(size(VF_HotWT7.z,1), 1);
 
 for z = 1:size(VF_HotWT7.z,1)
 
-    ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
-%     ratio_WT7= X_domain_WT7(z,:) / l0WT7;
+%     ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
+    ratio_WT7= X_domain_WT7(z,:) / l0WT7;
     unitindex_WT7 = find(ratio_WT7 >= 1, 1, 'first');
     unitindex_WT7 = unitindex_WT7 - 1;
     
@@ -889,8 +894,8 @@ duNN_HotWT10 = cell(size(VF_HotWT10.z,1), 1);
 
 for z = 1:size(VF_HotWT10.z,1)
 
-    ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
-%     ratio_WT10= X_domain_WT10(z,:) / l0WT10;
+%     ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
+    ratio_WT10= X_domain_WT10(z,:) / l0WT10;
     unitindex_WT10 = find(ratio_WT10 >= 1, 1, 'first');
     unitindex_WT10 = unitindex_WT10 - 1;
     
@@ -1065,12 +1070,12 @@ plot(duwrtlocalmaxmin_SLPIVASL{10}{25},duNN_SLPIVASL{10}{25},'k.')
 VF_HotWT7 = struct(VF_HotWT7);
 VF_HotWT10 = struct(VF_HotWT10);
 
-save('SGFV_param_HotWT7_short.mat','duwrtlocalmaxmin_HotWT7',...
+save('SGFV_param_HotWT7_Long.mat','duwrtlocalmaxmin_HotWT7',...
     'value_pairs_cell_HotWT7','duNN_HotWT7','VF_HotWT7','T_domain_WT7',...
     'X_domain_WT7','res_WT7')
 
 
-save('SGFV_param_HotWT10_short.mat','duwrtlocalmaxmin_HotWT10',...
+save('SGFV_param_HotWT10_Long.mat','duwrtlocalmaxmin_HotWT10',...
     'value_pairs_cell_HotWT10','duNN_HotWT10','VF_HotWT10','T_domain_WT10',...
     'X_domain_WT10','res_WT10')
 

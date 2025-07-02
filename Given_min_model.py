@@ -38,7 +38,7 @@ class MDN(nn.Module):
         return pi, mu, sigma
   
 Given_min_model = MDN(1,1,5)
-Given_min_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_min_model_short.pth'))
+Given_min_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_min_model.pth'))
 
 # Set the model to evaluation mode
 Given_min_model.eval()

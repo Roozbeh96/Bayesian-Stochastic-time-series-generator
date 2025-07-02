@@ -87,8 +87,8 @@ C = zeros();
 % set(gcf,'Position',[814,534,806,379])
 % axes('Position',[0.064516129032258,0.12664907651715,0.915632754342432,0.798350923482849])
 
-l0WT7 = 0.7;%0.3
-l0WT10 = 0.7;%0.3
+l0WT7 = 0.7;
+l0WT10 = 0.7;
 l0ASL = 0.72;
 
 
@@ -186,7 +186,7 @@ end
 for z = 1: size(VF_SLPIVASL.z,1)
     
 %     ratio_ASL = X_domain_ASL(z,:,:) ./ lambda_T_ASL(1,1);
-    ratio_ASL = X_domain_ASL(z,:,:) ./ l0ASL;
+    ratio_ASL = X_domain_ASL(z,:,:) ./ l0WASL;
     ratio_ASL_squeezed = squeeze(ratio_ASL); % Convert to 52 × 80000 matrix
 
     % Initialize the result vector with NaN (in case no values > 1 are found)
@@ -467,9 +467,9 @@ for z = 1:size(VF_GenASL.z,1)
     std_wprime_shorttime_GenASL(z) = std_wprime_shorttime_SLPIVASL(r);
 end
 %% Saving
-save('std_uprime_shorttime_Long_GenWT7.mat','std_uprime_shorttime_GenWT7')
-save('std_uprime_shorttime_Long_GenWT10.mat','std_uprime_shorttime_GenWT10')
-save('std_uprime_shorttime_Long_GenASL.mat','std_uprime_shorttime_GenASL')
-save('std_wprime_shorttime_Long_GenWT7.mat','std_wprime_shorttime_GenWT7')
-save('std_wprime_shorttime_Long_GenWT10.mat','std_wprime_shorttime_GenWT10')
-save('std_wprime_shorttime_Long_GenASL.mat','std_wprime_shorttime_GenASL')
+save('std_uprime_shorttime_short_GenWT7.mat','std_uprime_shorttime_GenWT7')
+save('std_uprime_shorttime_short_GenWT10.mat','std_uprime_shorttime_GenWT10')
+save('std_uprime_shorttime_short_GenASL.mat','std_uprime_shorttime_GenASL')
+save('std_wprime_shorttime_short_GenWT7.mat','std_wprime_shorttime_GenWT7')
+save('std_wprime_shorttime_short_GenWT10.mat','std_wprime_shorttime_GenWT10')
+save('std_wprime_shorttime_short_GenASL.mat','std_wprime_shorttime_GenASL')

@@ -98,8 +98,12 @@ classdef VFfeaturedVorX < dynamicprops
 
             else
                 %                 if Obj.name == "GenWT7"
-                std_uprime_shorttime = load('std_uprime_shorttime_short_GenWT7.mat').std_uprime_shorttime_GenWT7;
-                std_wprime_shorttime = load('std_wprime_shorttime_short_GenWT7.mat').std_wprime_shorttime_GenWT7;
+%                 std_uprime_shorttime = load('std_uprime_shorttime_short_GenWT7.mat').std_uprime_shorttime_GenWT7;
+%                 std_wprime_shorttime = load('std_wprime_shorttime_short_GenWT7.mat').std_wprime_shorttime_GenWT7;
+
+                std_uprime_shorttime = load('std_uprime_shorttime_Long_GenWT7.mat').std_uprime_shorttime_GenWT7;
+                std_wprime_shorttime = load('std_wprime_shorttime_Long_GenWT7.mat').std_wprime_shorttime_GenWT7;
+
                 %                     rho = -0.3;
                 %                 elseif Obj.name == "GenWT10"
                 %                     std_uprime_shorttime = load('std_uprime_shorttime_GenWT10.mat').std_uprime_shorttime_GenWT10;
@@ -146,66 +150,67 @@ classdef VFfeaturedVorX < dynamicprops
                 xi = size(Obj.HRVFu,2)*size(Obj.HRVFu,3);
                 res = (Obj.HRVFx(2)-Obj.HRVFx(1));
 
-                size_minmaxvec = 1e7;
-                minmaxvec = zeros(size_minmaxvec,2);
-                minind = 1;
-                maxind = 1;
-                start = std_uprime_shorttime(1,1)*randn(1,1)/Obj.u_tau;
-                sample = std_uprime_shorttime(1,1)*randn(1,1)/Obj.u_tau;
-                if start>sample
-                    minmaxvec(minind,1) = sample;
-                    minind = minind+1;
-                else
-                    minmaxvec(maxind,2) = sample;
-                    maxind = maxind+1;
-                end
-                is_min_sampled = (start > sample);  % true if start > sample, otherwise false
-
-                for x_ = 1:2*size_minmaxvec-1
-                    if is_min_sampled
-
-
-                        % Run model for the min value
-                        [result] = pyrunfile("G:\My Drive\Research\VFfeaturedVorX\Given_min_model.py", ...
-                            "ReturnList", x_test = minmaxvec(minind-1,1));
-                        mix_coeff_Given_min = single(result{1});
-                        mean_mix_Given_min = single(result{2});
-                        std_mix_Given_min = single(result{3});
-                        minmaxvec(maxind,2) = minmaxvec(minind-1,1);
-                        while minmaxvec(maxind,2)<=minmaxvec(minind-1,1)
-                            minmaxvec(maxind,2)=0;
-                            randomvar =rand(1,1);
-                            for j =1:size(single(result{1}),2)
-                                minmaxvec(maxind,2) = mix_coeff_Given_min(1,j)*norminv(randomvar,mean_mix_Given_min(1,j),std_mix_Given_min(1,j)) + minmaxvec(maxind,2);
-                            end
-                        end
-
-                        maxind = maxind + 1;
-
-                    else
-
-
-                        % Run model for the max value
-                        [result] = pyrunfile("G:\My Drive\Research\VFfeaturedVorX\Given_max_model.py", ...
-                            "ReturnList", x_test = minmaxvec(maxind-1,2));
-                        mix_coeff_Given_max = single(result{1});
-                        mean_mix_Given_max = single(result{2});
-                        std_mix_Given_max = single(result{3});
-                        minmaxvec(minind,1) = minmaxvec(maxind-1,2);
-                        while minmaxvec(minind,1)>=minmaxvec(maxind-1,2)
-                            minmaxvec(minind,1)=0;
-                            randomvar =rand(1,1);
-                            for j =1:size(single(result{1}),2)
-                                minmaxvec(minind,1) = mix_coeff_Given_max(1,j)*norminv(randomvar,mean_mix_Given_max(1,j),std_mix_Given_max(1,j)) + minmaxvec(minind,1);
-                            end
-                        end
-                        minind = minind + 1;
-                    end
-
-                    % Toggle the flag after each iteration
-                    is_min_sampled = ~is_min_sampled;
-                end
-                save('minmaxvec.mat','minmaxvec')
+%                 size_minmaxvec = 2.5e6;
+%                 minmaxvec = zeros(size_minmaxvec,2);
+%                 minind = 1;
+%                 maxind = 1;
+%                 start = std_uprime_shorttime(1,1)*randn(1,1)/Obj.u_tau;
+%                 sample = std_uprime_shorttime(1,1)*randn(1,1)/Obj.u_tau;
+%                 if start>sample
+%                     minmaxvec(minind,1) = sample;
+%                     minind = minind+1;
+%                 else
+%                     minmaxvec(maxind,2) = sample;
+%                     maxind = maxind+1;
+%                 end
+%                 is_min_sampled = (start > sample);  % true if start > sample, otherwise false
+% 
+%                 for x_ = 1:2*size_minmaxvec-1
+%                     if is_min_sampled
+% 
+% 
+%                         % Run model for the min value
+%                         [result] = pyrunfile("G:\My Drive\Research\VFfeaturedVorX\Given_min_model.py", ...
+%                             "ReturnList", x_test = minmaxvec(minind-1,1));
+%                         mix_coeff_Given_min = single(result{1});
+%                         mean_mix_Given_min = single(result{2});
+%                         std_mix_Given_min = single(result{3});
+%                         minmaxvec(maxind,2) = minmaxvec(minind-1,1);
+%                         while minmaxvec(maxind,2)<=minmaxvec(minind-1,1)
+%                             minmaxvec(maxind,2)=0;
+%                             randomvar =rand(1,1);
+%                             for j =1:size(single(result{1}),2)
+%                                 minmaxvec(maxind,2) = mix_coeff_Given_min(1,j)*norminv(randomvar,mean_mix_Given_min(1,j),std_mix_Given_min(1,j)) + minmaxvec(maxind,2);
+%                             end
+%                         end
+% 
+%                         maxind = maxind + 1;
+% 
+%                     else
+% 
+% 
+%                         % Run model for the max value
+%                         [result] = pyrunfile("G:\My Drive\Research\VFfeaturedVorX\Given_max_model.py", ...
+%                             "ReturnList", x_test = minmaxvec(maxind-1,2));
+%                         mix_coeff_Given_max = single(result{1});
+%                         mean_mix_Given_max = single(result{2});
+%                         std_mix_Given_max = single(result{3});
+%                         minmaxvec(minind,1) = minmaxvec(maxind-1,2);
+%                         while minmaxvec(minind,1)>=minmaxvec(maxind-1,2)
+%                             minmaxvec(minind,1)=0;
+%                             randomvar =rand(1,1);
+%                             for j =1:size(single(result{1}),2)
+%                                 minmaxvec(minind,1) = mix_coeff_Given_max(1,j)*norminv(randomvar,mean_mix_Given_max(1,j),std_mix_Given_max(1,j)) + minmaxvec(minind,1);
+%                             end
+%                         end
+%                         minind = minind + 1;
+%                     end
+% 
+%                     % Toggle the flag after each iteration
+%                     is_min_sampled = ~is_min_sampled;
+%                 end
+%                 save('minmaxvec_short.mat','minmaxvec')
+%                 data = load('minmaxvec_short.mat');
                 data = load('minmaxvec.mat');
                 minmaxvec = data.minmaxvec;
                 minind = 1;
@@ -357,16 +362,20 @@ classdef VFfeaturedVorX < dynamicprops
                         sigma2 = 1*std_wprime_shorttime(r,1);
 
                         SGuprime(r,:) = SGuprime(r,:) * Obj.u_tau;
+                        SGuprime(r,:) = SGuprime(r,:) - mean(SGuprime(r,:),2);
 
                         SGwprime(r,:) = rho* sigma2/sigma1 * SGuprime(r,:) + sqrt(1 - rho^2) * normrnd(0, sigma2, [1, size(xi,2)]);
-
+                        SGwprime(r,:) = SGwprime(r,:) - mean(SGwprime(r,:),2);
 
                     else
                         sigma1 = 1*std_uprime_shorttime(r,1);
                         sigma2 = 1*std_wprime_shorttime(r,1);
 
                         SGuprime(r,:) = 0.99 * SGuprime(r-1,:) + sqrt(1 - 0.99^2) * normrnd(0, sigma1, [1, size(xi,2)]);
+                        SGuprime(r,:) = SGuprime(r,:) - mean(SGuprime(r,:),2);
+
                         SGwprime(r,:) = rho* sigma2/sigma1 * SGuprime(r,:) + sqrt(1 - rho^2) * normrnd(0, sigma2, [1, size(xi,2)]);
+                        SGwprime(r,:) = SGwprime(r,:) - mean(SGwprime(r,:),2);
                     end
 
                 end
