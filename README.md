@@ -11,8 +11,9 @@ Tool to stochastically generate (spatio/temporal)-series velocity signal. This v
   <summary>Click to see the documentation for Python files</summary>
 
 ### Python files
-- Installation:
 <details>
+<summary> Installation:</summary>
+
 1. 🛠️ Installing Poetry
 
 To install [Poetry](https://python-poetry.org/) (Python dependency management and packaging tool), run the following command in your terminal:
