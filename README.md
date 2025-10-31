@@ -57,7 +57,16 @@ poetry new project_name
   <summary>Click to see the documentation for Python files</summary>
 
 ### Python files
-`
+`Bayesian_ST/src/bayesian_st`<br>
+-`main.py:` Define the parameters.<br>
+
+
+`Bayesian_ST/src/bayesian_st/utils`<br>
+-`Stochastic_generation.py:` Defining object.<br>
+-`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset [Link](https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668).
+
+
+
 
 
 </details>
