@@ -57,13 +57,13 @@ poetry new project_name
   <summary>Click to see the documentation for Python files</summary>
 
 ### Python files
-
+`
 
 
 </details>
 
 ## Algorithm
-
+Fig 1: The velocity signal is chopped into the desired length scale.
 <img src="Fig/Fig17.png" alt="what!!!" width="400"/>
 <img src="Fig/Fig20.png" alt="what!!!" width="400"/>
 <img src="Fig/Fig24.png" alt="what!!!" width="400"/>

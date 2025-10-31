@@ -1,10 +1,16 @@
+%#ok<*NOPTS>
+
+%{
+    In this code, the experimental velocity signal is chopped into desired
+    length-scale.
+%}
+%%
+
+
 Data1 = load('VF_GenWT7(Beforepassingkernelres32makima).mat');
 VF_GenWT7 = Data1.VF_GenWT7;
 clear('Data1')
 
-% Data2 = load('VF_PIVWT7.mat');
-% VF_PIVWT7 = Data2.VF_PIVWT7;
-% clear('Data2')
 
 Data3 = load('VF_HotWT7.mat');
 VF_HotWT7 = Data3.VF_HotWT7;
@@ -14,9 +20,6 @@ Data4 = load('VF_GenWT10(Beforepassingkernelres25makima).mat');
 VF_GenWT10 = Data4.VF_GenWT10;
 clear('Data4')
 
-% Data5 = load('VF_PIVWT10.mat');
-% VF_PIVWT10 = Data5.VF_PIVWT10;
-% clear('Data5')
 
 Data6 = load('VF_HotWT10.mat');
 VF_HotWT10 = Data6.VF_HotWT10;
@@ -178,7 +181,7 @@ VF_HotWT10wprimeshort = VF_HotWT10wprimeshort(:, ~cols_with_zeros_wprime_WT10);
 
 for z=1:size(VF_HotWT10.z,1)
     
-    VF_HotWT10.z(z)/VF_HotWT10.delta
+    VF_HotWT10.z(z)/VF_HotWT10.delta 
     R = corrcoef(VF_HotWT10uprimeshort(z,:),VF_HotWT10wprimeshort(z,:))
     
 end
