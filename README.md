@@ -4,6 +4,7 @@ Tool to stochastically generate (spatio/temporal)-series velocity signal. This v
 
 ## Contents
 - [python package](#python-package)
+- [Algorithm](#algorithm)
 
 ## Python package
 <!-- brief blurb or link to docs/install/usage -->
@@ -58,8 +59,13 @@ poetry new project_name
 ### Python files
 
 
-- Explanation:
-
-<img src="Fig/Fig17.png" alt="what!!!" width="400"/>
 
 </details>
+
+## Algorithm
+
+<img src="Fig/Fig17.png" alt="what!!!" width="400"/>
+<img src="Fig/Fig20.png" alt="what!!!" width="400"/>
+<img src="Fig/Fig24.png" alt="what!!!" width="400"/>
+<img src="Fig/Fig27.png" alt="what!!!" width="400"/>
+<img src="Fig/Fig28.png" alt="what!!!" width="400"/>
