@@ -30,47 +30,6 @@ classdef VFfeaturedVorX < dynamicprops
             Obj.ks = z0/exp(-0.39*8.5);
         end
         
-        function Increasing_Res_nonlinear(Obj, factor)
-            if Obj.type == "Exp"
-
-            else
-                L = ceil(Obj.LSM*Obj.delta/Obj.Delx);%Number of intervals
-                Numrator = floor((size(Obj.u,2)-1)/L);
-                DelxGen = Obj.Delx;
-                DelzGen = Obj.z(2)-Obj.z(1);
-                kappa = 0.39;
-                if isnan(factor)
-                    Obj.factor = floor(DelxGen/DelzGen);
-                else
-                    Obj.factor = factor;
-                end
-                Obj.HRVFu=zeros(size(Obj.u,1), Obj.factor*(L) +1, Numrator);
-                Obj.HRVFw=zeros(size(Obj.u,1), Obj.factor*(L) +1, Numrator);
-                Obj.HRVFx= 0:DelxGen/Obj.factor: (L)*DelxGen;
-                Obj.HRVFz=Obj.z;
-                xorg = 0:DelxGen:(L)*DelxGen;
-                Obj.x = xorg;
-                xi = Obj.HRVFx;
-
-                for S= 1:Numrator
-
-                    ucroped = Obj.u(:, (S-1)*L+1:(S)*L+1);
-                    wcroped = Obj.w(:, (S-1)*L+1:(S)*L+1);
-
-                    for r = 1:size(Obj.HRVFz,1)
-                        % Interpolate the row
-                        Obj.HRVFu(r, :, S) = interp1(xorg, ucroped(r, :), xi, 'makima');
-                        Obj.HRVFw(r, :, S) = interp1(xorg, wcroped(r, :), xi, 'makima');
-                    end
-                end
-                %                 Obj.HRVFu = repmat(Obj.u_tau/kappa*log(Obj.HRVFz/Obj.z0), [1, size(Obj.HRVFu,2), size(Obj.HRVFu,3)]); %just for ASL if we want to use sto_gen uprime for mean flow
-                %                 Obj.HRVFuprime = Obj.HRVFu-mean(Obj.HRVFu,3);
-                Obj.HRVFuprime = Obj.HRVFu - Obj.u_tau/kappa*log(Obj.HRVFz/Obj.z0);
-
-
-            end
-
-        end
         function Increasing_Res_sto(Obj, factor)
             if Obj.type == "Exp"
 

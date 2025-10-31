@@ -51,6 +51,10 @@ In case if you want to make environment from scratch, run:(Do not recommended)
 ```bash
 poetry new project_name
 ```
+If you want to delete the caches and re 
+```bash
+git rm -r --cached .
+```
 </details>
 
 <details>
@@ -63,7 +67,7 @@ poetry new project_name
 
 `Bayesian_ST/src/bayesian_st/utils`<br>
 -`Stochastic_generation.py:` Defining object.<br>
--`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset [Link](https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668).
+-`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668).
 
 
 
@@ -72,9 +76,11 @@ poetry new project_name
 </details>
 
 ## Algorithm
-Fig 1: The velocity signal is chopped into the desired length scale.
-<img src="Fig/Fig17.png" alt="what!!!" width="400"/>
-<img src="Fig/Fig20.png" alt="what!!!" width="400"/>
-<img src="Fig/Fig24.png" alt="what!!!" width="400"/>
-<img src="Fig/Fig27.png" alt="what!!!" width="400"/>
-<img src="Fig/Fig28.png" alt="what!!!" width="400"/>
+Fig 1: The velocity signal is chopped into the desired length scale.<br>
+<img src="Fig/Fig17.png" alt="what!!!" width="400"/><br>
+Fig 2: Variability of the velocity signal after chopping for different datasets.<br>
+<img src="Fig/Fig2.png" alt="what!!!" width="400"/><br>
+<img src="Fig/Fig20.png" alt="what!!!" width="400"/><br>
+<img src="Fig/Fig24.png" alt="what!!!" width="400"/><br>
+<img src="Fig/Fig27.png" alt="what!!!" width="400"/><br>
+<img src="Fig/Fig28.png" alt="what!!!" width="400"/><br>
