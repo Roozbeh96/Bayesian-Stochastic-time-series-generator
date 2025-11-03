@@ -77,12 +77,20 @@ git push
 -`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file. There is no need to run this file, just use the output vectors, which are standard deviation of fluctuating velocity signal (u^{\prime}/u_{\tau}, w^{\prime}/u_{\tau}) of the chopped time-series velocity signal (,std_uprime_chopped.mat,std_wprime_chopped.mat). At the end of this file, we only use the results of the standard deviation of the chopped HotWT7. To justify our claim, I did hypothesis testing.<br>
 
 $$
-H_0: \; |\sigma_{chopped\_WT7} - \sigma_{chopped\_WT10}| < \delta
+H_0: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| < \delta
 $$
 
 $$
-H_1: \; |\sigma_{chopped\_WT7} - \sigma_{chopped\_WT10}| > \delta
+H_1: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| > \delta
 $$
+
+$\delta$ is the margin. Now to find the P-value, we use the following equation<br>
+
+$$
+p = Pr(T_b \ge T_{\text{obs}} - \delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{T_b \ge T_{\text{obs}} - \delta\}
+$$
+
+
 
 
 

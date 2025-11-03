@@ -236,21 +236,21 @@ end
 % the statistics of HotWT7 for signal generation. But before that, we need
 % to justify our claim. To do so, I use hypothesis testing.
 %H_0: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
-%and HotWT10 have difference LESS than 0.1.
+%and HotWT10 have difference LESS than 0.01(margin).
 %H_1: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
-%and HotWT10 have difference MORE than 0.1.
+%and HotWT10 have difference MORE than 0.01(margin).
 % Since we do not know about the distribution (Gaussian or other ones), I
 % used non-parametric distribution. Use bootstraping.
 % First we compute the difference between the std of the observed
 % distribution.
 
-margin = 0.1;
+margin = 0.01;
 x = VF_HotWT7uprime_chopped{9}/VF_HotWT7.u_tau;
 s1 = std(x,0,2);
 y = VF_HotWT10uprime_chopped{9}/VF_HotWT10.u_tau;
 s2 = std(y,0,2);
 n = numel(x); m = numel(y);
-d_obs = s1;
+d_obs = abs(s1 - s2);
 
 % Now, let us combine all the samples of x and y, named z, and do the
 % bootstraping to generate samples of xb and yb and compute the difference
@@ -261,14 +261,16 @@ B = 20000;
 d_boot = zeros(B,1);
 for b = 1:B
 
+    xb = z(randi(N, n, 1));
     yb = z(randi(N, m, 1));
-    d_boot(b) = abs(s1 - std(yb,0,2));
+    d_boot(b) = abs(std(xb,0,2) - std(yb,0,2));
 end
 
 % Now let us compute the p-value. 
 
-pval = mean(d_boot <= margin)
+pval = mean(d_boot >= d_obs - margin)
 alpha = 0.05;
+
 ci = prctile(d_boot,[2.5,97.5]);
 disp(struct('s1',s1,'s2',s2,'d_obs',d_obs,'margin',margin,...
              'p_value',pval,'ci_boot',ci,...
