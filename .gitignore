@@ -5,7 +5,8 @@ __pycache__/
 *.py[codz]
 *$py.class
 *.asv
-*.mat
+VF_HotWT7.mat
+VF_HotWT10.mat
 
 # C extensions
 *.so

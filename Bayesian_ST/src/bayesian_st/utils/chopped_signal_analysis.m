@@ -120,6 +120,10 @@ std_uprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
 mean_wprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
 std_wprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
 
+% Since the mean of each chopped signal is zero, there is no difference
+% whether compute the std of each segment then take an average, or take std
+% of the whole chopped signal. Here, I took std of the whole chopped
+% signal.
 
 for z = 1: size(VF_HotWT7.z,1)
     
@@ -226,11 +230,52 @@ for z = 1: size(VF_HotWT10.z,1)
 
 
 end
+%% Hypothesis Testing. 
 
+%Since the statistics of HotWT7 and HotWT10 are similar to each other, we just use
+% the statistics of HotWT7 for signal generation. But before that, we need
+% to justify our claim. To do so, I use hypothesis testing.
+%H_0: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
+%and HotWT10 have difference LESS than 0.1.
+%H_1: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
+%and HotWT10 have difference MORE than 0.1.
+% Since we do not know about the distribution (Gaussian or other ones), I
+% used non-parametric distribution. Use bootstraping.
+% First we compute the difference between the std of the observed
+% distribution.
 
+margin = 0.1;
+x = VF_HotWT7uprime_chopped{9}/VF_HotWT7.u_tau;
+s1 = std(x,0,2);
+y = VF_HotWT10uprime_chopped{9}/VF_HotWT10.u_tau;
+s2 = std(y,0,2);
+n = numel(x); m = numel(y);
+d_obs = s1;
+
+% Now, let us combine all the samples of x and y, named z, and do the
+% bootstraping to generate samples of xb and yb and compute the difference
+% between the stds. I repeated this scenario 20,000 times.
+z = [x,y];
+N = numel(z);
+B = 20000;
+d_boot = zeros(B,1);
+for b = 1:B
+
+    yb = z(randi(N, m, 1));
+    d_boot(b) = abs(s1 - std(yb,0,2));
+end
+
+% Now let us compute the p-value. 
+
+pval = mean(d_boot <= margin)
+alpha = 0.05;
+ci = prctile(d_boot,[2.5,97.5]);
+disp(struct('s1',s1,'s2',s2,'d_obs',d_obs,'margin',margin,...
+             'p_value',pval,'ci_boot',ci,...
+             'reject_H0',pval<alpha))
 %% Interpolation to generated field
-% Since the statistics of HotWT7 and HotWT10 are similar to each other, we just use
-% the statistics of HotWT7 for signal generation.
+
+
 z_min = 50*VF_HotWT7.nu / VF_HotWT7.u_tau
 z_max = 0.25*VF_HotWT7.delta
 lambda_T = 0.01;
@@ -238,19 +283,19 @@ lambda_T = 0.01;
 VF_GenWT7_z = z_min:0.4*lambda_T/10:z_max + 0.4*lambda_T/10
 
 
-std_uprime_chopped_GenWT7 = zeros(size(VF_GenWT7_z,2),1);
-std_wprime_chopped_GenWT7 = zeros(size(VF_GenWT7_z,2),1);
+std_uprime_chopped = zeros(size(VF_GenWT7_z,2),1);
+std_wprime_chopped = zeros(size(VF_GenWT7_z,2),1);
 
 
 for z = 1:size(VF_GenWT7_z,2) 
     [r]=find(VF_GenWT7_z(z)<=VF_HotWT7.z,1,'first');
-    std_uprime_chopped_GenWT7(z) = std_uprime_O_u_tau_chopped_HotWT7(r);
-    std_wprime_chopped_GenWT7(z) = std_wprime_O_u_tau_chopped_HotWT7(r);
+    std_uprime_chopped(z) = std_uprime_O_u_tau_chopped_HotWT7(r);
+    std_wprime_chopped(z) = std_wprime_O_u_tau_chopped_HotWT7(r);
 end
 
 
 %% Saving
 
-save('std_uprime_chopped_GenWT7.mat','std_uprime_chopped_GenWT7')
-save('std_wprime_chopped_GenWT7.mat','std_wprime_chopped_GenWT7')
+save('std_uprime_chopped.mat','std_uprime_chopped')
+save('std_wprime_chopped.mat','std_wprime_chopped')
 

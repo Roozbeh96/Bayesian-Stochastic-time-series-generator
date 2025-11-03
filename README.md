@@ -74,8 +74,11 @@ git push
 
 `Bayesian_ST/src/bayesian_st/utils`<br>
 -`Stochastic_generation.py:` Defining object.<br>
--`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file. There is no need to run this file, just use the output vectors, which are standard deviation of fluctuating velocity signal (u^{\prime}/u_{\tau}, w^{\prime}/u_{\tau}) of the chopped time-series velocity signal.
-
+-`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file. There is no need to run this file, just use the output vectors, which are standard deviation of fluctuating velocity signal (u^{\prime}/u_{\tau}, w^{\prime}/u_{\tau}) of the chopped time-series velocity signal (,std_uprime_chopped.mat,std_wprime_chopped.mat). At the end of this file, we only use the results of the standard deviation of the chopped HotWT7. To justify our claim, I did hypothesis testing.<br>
+$$
+H_{0}: \abs(\sigma_{\text{chopped_WT7}}-\sigma_{\text{chopped_WT10}}) < \delta 
+H_{1}: \abs(\sigma_{\text{chopped_WT7}}-\sigma_{\text{chopped_WT10}}) > \delta
+$$
 
 
 
