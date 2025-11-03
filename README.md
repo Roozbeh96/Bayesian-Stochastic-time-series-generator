@@ -74,7 +74,7 @@ git push
 
 `Bayesian_ST/src/bayesian_st/utils`<br>
 -`Stochastic_generation.py:` Defining object.<br>
--`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file.
+-`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file. There is no need to run this file, just use the output vectors, which are standard deviation of fluctuating velocity signal (u^{\prime}/u_{\tau}, w^{\prime}/u_{\tau}) of the chopped time-series velocity signal.
 
 
 
@@ -88,6 +88,7 @@ Fig 1: The velocity signal is chopped into the desired length scale.<br>
 <img src="Fig/Fig17.png" alt="what!!!" width="400"/><br>
 Fig 2: Variability of the velocity signal after chopping for different datasets.<br>
 <img src="Fig/Fig2.png" alt="what!!!" width="400"/><br>
+Fig 3: Shows the algorithm of generating velocity signal.<br>
 <img src="Fig/Fig20.png" alt="what!!!" width="400"/><br>
 <img src="Fig/Fig24.png" alt="what!!!" width="400"/><br>
 <img src="Fig/Fig27.png" alt="what!!!" width="400"/><br>

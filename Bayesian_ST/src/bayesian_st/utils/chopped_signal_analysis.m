@@ -115,16 +115,16 @@ end
 
 %% Analyzing the distriburtion
 
-mean_uprime_O_u_tau_shorttime_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
-std_uprime_O_u_tau_shorttime_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
-mean_wprime_O_u_tau_shorttime_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
-std_wprime__O_u_tau_shorttime_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
+mean_uprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
+std_uprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
+mean_wprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
+std_wprime_O_u_tau_chopped_HotWT7 = zeros(size(VF_HotWT7.z,1),1);
 
 
 for z = 1: size(VF_HotWT7.z,1)
     
     
-    [pdf_uprime_shorttime_WT7,uprime_shorttime_WT7] = ksdensity(VF_HotWT7uprime_chopped{z}/VF_HotWT7.u_tau,...
+    [pdf_uprime_chopped_WT7,uprime_chopped_WT7] = ksdensity(VF_HotWT7uprime_chopped{z}/VF_HotWT7.u_tau,...
     linspace(-6, 6, 100));
 
     [pdf_uprime_globaltime_WT7,uprime_globaltime_WT7] = ksdensity((VF_HotWT7.u(z,:)-mean(VF_HotWT7.u(z,:),2))/VF_HotWT7.u_tau,...
@@ -132,18 +132,18 @@ for z = 1: size(VF_HotWT7.z,1)
 
 
 
-    mean_uprime_O_u_tau_shorttime_HotWT7(z,1) = mean(VF_HotWT7uprime_chopped{z}/VF_HotWT7.u_tau,2);
-    std_uprime_O_u_tau_shorttime_HotWT7(z,1) = std(VF_HotWT7uprime_chopped{z}/VF_HotWT7.u_tau,0,2);
+    mean_uprime_O_u_tau_chopped_HotWT7(z,1) = mean(VF_HotWT7uprime_chopped{z}/VF_HotWT7.u_tau,2);
+    std_uprime_O_u_tau_chopped_HotWT7(z,1) = std(VF_HotWT7uprime_chopped{z}/VF_HotWT7.u_tau,0,2);
     
-    mean_wprime_O_u_tau_shorttime_HotWT7(z,1) = mean(VF_HotWT7wprime_chopped{z}/VF_HotWT7.u_tau,2);
-    std_wprime__O_u_tau_shorttime_HotWT7(z,1) = std(VF_HotWT7wprime_chopped{z}/VF_HotWT7.u_tau,0,2);
+    mean_wprime_O_u_tau_chopped_HotWT7(z,1) = mean(VF_HotWT7wprime_chopped{z}/VF_HotWT7.u_tau,2);
+    std_wprime_O_u_tau_chopped_HotWT7(z,1) = std(VF_HotWT7wprime_chopped{z}/VF_HotWT7.u_tau,0,2);
     
     % Fig2(a) in the repo
 
     % figure
     % set(gcf,'Position',[622,508,806,394])
     % axes('Position',[0.08560794044665,0.134517766497462,0.40818858560794,0.83502538071066])
-    % plot(uprime_shorttime_WT7,pdf_uprime_shorttime_WT7,...
+    % plot(uprime_chopped_WT7,pdf_uprime_chopped_WT7,...
     %     'LineStyle','-','color','r','Marker','none','Linewidth',2);
     % hold on
     % plot(uprime_globaltime_WT7,pdf_uprime_globaltime_WT7,...
@@ -172,34 +172,35 @@ for z = 1: size(VF_HotWT7.z,1)
 end
 
 
-mean_uprime_O_u_tau_shorttime_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
-std_uprime_O_u_tau_shorttime_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
-mean_wprime_O_u_tau_shorttime_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
-std_wprime_O_u_tau_shorttime_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
+mean_uprime_O_u_tau_chopped_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
+std_uprime_O_u_tau_chopped_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
+mean_wprime_O_u_tau_chopped_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
+std_wprime_O_u_tau_chopped_HotWT10 = zeros(size(VF_HotWT10.z,1),1);
 
 for z = 1: size(VF_HotWT10.z,1)
     
     
     
-    [pdf_uprime_shorttime_WT10,uprime_shorttime_WT10] = ksdensity(VF_HotWT10uprime_chopped{z}/VF_HotWT10.u_tau,...
+    [pdf_uprime_chopped_WT10,uprime_chopped_WT10] = ksdensity(VF_HotWT10uprime_chopped{z}/VF_HotWT10.u_tau,...
     linspace(-6, 6, 100));
 
     [pdf_uprime_globaltime_WT10,uprime_globaltime_WT10] = ksdensity((VF_HotWT10.u(z,:)-mean(VF_HotWT10.u(z,:),2))/VF_HotWT10.u_tau,...
     linspace(-6, 6, 100));
 
 
-    mean_uprime_O_u_tau_shorttime_HotWT10(z,1) = mean(VF_HotWT10uprime_chopped{z}/VF_HotWT10.u_tau,2);
-    std_uprime_O_u_tau_shorttime_HotWT10(z,1) = std(VF_HotWT10uprime_chopped{z}/VF_HotWT10.u_tau,0,2);
+    mean_uprime_O_u_tau_chopped_HotWT10(z,1) = mean(VF_HotWT10uprime_chopped{z}/VF_HotWT10.u_tau,2);
+    std_uprime_O_u_tau_chopped_HotWT10(z,1) = std(VF_HotWT10uprime_chopped{z}/VF_HotWT10.u_tau,0,2);
     
-    mean_wprime_O_u_tau_shorttime_HotWT10(z,1) = mean(VF_HotWT10wprime_chopped{z}/VF_HotWT10.u_tau,2);
-    std_wprime_O_u_tau_shorttime_HotWT10(z,1) = std(VF_HotWT10wprime_chopped{z}/VF_HotWT10.u_tau,0,2);
+    mean_wprime_O_u_tau_chopped_HotWT10(z,1) = mean(VF_HotWT10wprime_chopped{z}/VF_HotWT10.u_tau,2);
+    std_wprime_O_u_tau_chopped_HotWT10(z,1) = std(VF_HotWT10wprime_chopped{z}/VF_HotWT10.u_tau,0,2);
     
 
     %Fig2(b) in the repo
+
     % figure
     % set(gcf,'Position',[622,508,806,394])
     % axes('Position',[0.08560794044665,0.134517766497462,0.40818858560794,0.83502538071066])
-    % plot(uprime_shorttime_WT10,pdf_uprime_shorttime_WT10,...
+    % plot(uprime_chopped_WT10,pdf_uprime_chopped_WT10,...
     %     'LineStyle','-','color','r','Marker','none','Linewidth',2);
     % hold on
     % plot(uprime_globaltime_WT10,pdf_uprime_globaltime_WT10,...
@@ -227,73 +228,29 @@ for z = 1: size(VF_HotWT10.z,1)
 end
 
 
-
-figure 
-plot(VF_HotWT7.z/VF_HotWT7.delta,std_uprime_O_u_tau_shorttime_HotWT7,...
-    'LineStyle','none','color','k','Marker','^')
-hold on
-plot(VF_HotWT10.z/VF_HotWT10.delta,std_uprime_O_u_tau_shorttime_HotWT10,...
-    'LineStyle','none','color','r','Marker','v')
-legend('uprimeWT7','uprimeWT10')
-ylim([0 0.3])
-figure 
-plot(VF_HotWT7.z/VF_HotWT7.delta,std_wprime__O_u_tau_shorttime_HotWT7,...
-    'LineStyle','none','color','k','Marker','^')
-hold on
-plot(VF_HotWT10.z/VF_HotWT10.delta,std_wprime_O_u_tau_shorttime_HotWT10,...
-    'LineStyle','none','color','r','Marker','v')
-legend('wprimeWT7','wprimeWT10')
-ylim([0 0.3])
-
-%% Plot samples of velocity signal in the order of lambda_T
-
-
-
-figure
-plot(X_domain_WT7(1,:) / lambda_T_WT7(1,1),VF_HotWT7.u(1,:))
-xlim([0 10])
-
-figure
-plot(T_domain_WT7(1,:),VF_HotWT7.u(1,:))
-
-figure
-plot((0:0.0001:1-0.0001).*mean(VF_HotWT7.u(1,:),2),VF_HotWT7.u(1,1:1:10000))
-xlim([0.01 0.02])
-
-
-figure
-plot((0:1/120:1-1/120).*mean(VF_SLPIVASL.u(1,25,:),3),reshape(VF_SLPIVASL.u(1,25,1:1:120),[],1))
-
 %% Interpolation to generated field
+% Since the statistics of HotWT7 and HotWT10 are similar to each other, we just use
+% the statistics of HotWT7 for signal generation.
+z_min = 50*VF_HotWT7.nu / VF_HotWT7.u_tau
+z_max = 0.25*VF_HotWT7.delta
+lambda_T = 0.01;
 
-std_uprime_shorttime_GenWT7 = zeros(size(VF_GenWT7.z,1),1);
-std_wprime_shorttime_GenWT7 = zeros(size(VF_GenWT7.z,1),1);
-std_uprime_shorttime_GenWT10 = zeros(size(VF_GenWT10.z,1),1);
-std_wprime_shorttime_GenWT10 = zeros(size(VF_GenWT10.z,1),1);
-std_uprime_shorttime_GenASL = zeros(size(VF_GenASL.z,1),1);
-std_wprime_shorttime_GenASL = zeros(size(VF_GenASL.z,1),1);
+VF_GenWT7_z = z_min:0.4*lambda_T/10:z_max + 0.4*lambda_T/10
 
-for z = 1:size(VF_GenWT7.z,1) 
-    [r]=find(VF_GenWT7.z(z)<=VF_HotWT7.z,1,'first');
-    std_uprime_shorttime_GenWT7(z) = std_uprime_O_u_tau_shorttime_HotWT7(r);
-    std_wprime_shorttime_GenWT7(z) = std_wprime__O_u_tau_shorttime_HotWT7(r);
+
+std_uprime_chopped_GenWT7 = zeros(size(VF_GenWT7_z,2),1);
+std_wprime_chopped_GenWT7 = zeros(size(VF_GenWT7_z,2),1);
+
+
+for z = 1:size(VF_GenWT7_z,2) 
+    [r]=find(VF_GenWT7_z(z)<=VF_HotWT7.z,1,'first');
+    std_uprime_chopped_GenWT7(z) = std_uprime_O_u_tau_chopped_HotWT7(r);
+    std_wprime_chopped_GenWT7(z) = std_wprime_O_u_tau_chopped_HotWT7(r);
 end
 
-for z = 1:size(VF_GenWT10.z,1) 
-    [r]=find(VF_GenWT10.z(z)<=VF_HotWT10.z,1,'first');
-    std_uprime_shorttime_GenWT10(z) = std_uprime_O_u_tau_shorttime_HotWT10(r);
-    std_wprime_shorttime_GenWT10(z) = std_wprime_O_u_tau_shorttime_HotWT10(r);
-end
 
-for z = 1:size(VF_GenASL.z,1) 
-    [r]=find(VF_GenASL.z(z)<=VF_SLPIVASL.z,1,'first');
-    std_uprime_shorttime_GenASL(z) = std_uprime_shorttime_SLPIVASL(r);
-    std_wprime_shorttime_GenASL(z) = std_wprime_shorttime_SLPIVASL(r);
-end
 %% Saving
-save('std_uprime_shorttime_Long_GenWT7.mat','std_uprime_shorttime_GenWT7')
-save('std_uprime_shorttime_Long_GenWT10.mat','std_uprime_shorttime_GenWT10')
-save('std_uprime_shorttime_Long_GenASL.mat','std_uprime_shorttime_GenASL')
-save('std_wprime_shorttime_Long_GenWT7.mat','std_wprime_shorttime_GenWT7')
-save('std_wprime_shorttime_Long_GenWT10.mat','std_wprime_shorttime_GenWT10')
-save('std_wprime_shorttime_Long_GenASL.mat','std_wprime_shorttime_GenASL')
+
+save('std_uprime_chopped_GenWT7.mat','std_uprime_chopped_GenWT7')
+save('std_wprime_chopped_GenWT7.mat','std_wprime_chopped_GenWT7')
+
