@@ -51,9 +51,16 @@ In case if you want to make environment from scratch, run:(Do not recommended)
 ```bash
 poetry new project_name
 ```
-If you want to delete the caches and re 
+If you want to delete the caches use:
 ```bash
 git rm -r --cached .
+```
+
+Then re download the .git file and do:
+```bash
+git add .
+git commit -m 'init'
+git push
 ```
 </details>
 
@@ -67,7 +74,8 @@ git rm -r --cached .
 
 `Bayesian_ST/src/bayesian_st/utils`<br>
 -`Stochastic_generation.py:` Defining object.<br>
--`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668).
+-`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file.
+
 
 
 
