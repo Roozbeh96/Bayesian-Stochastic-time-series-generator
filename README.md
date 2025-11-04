@@ -86,7 +86,7 @@ $$p_1 = \Pr(d_{boot} \le -\delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\
 
 $$p_2 = \Pr(d_{boot} \ge \delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \ge \delta\,\}$$
 
-If $p_1<\alpha \& p_2<\alpha$ we reject the $H_{0}$.
+If $p_1<\alpha & p_2<\alpha$ we reject the $H_{0}$.
 
 
 
