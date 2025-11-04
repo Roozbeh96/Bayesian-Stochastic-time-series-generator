@@ -1,58 +1,23 @@
-Data3 = load('VF_HotWT7.mat');
-VF_HotWT7 = Data3.VF_HotWT7;
-clear('Data3')
+%#ok<*NOPTS>
+
+%{
+    In this code, the joint p.d.f. of local extremums(min-max points) in
+    the chopped velocity signal and joint p.d.f. of minimum distance of 
+    each point w.r.t. local extremums and gradient to the next point. 
+%}
+
+%% Read data.
+
+Data = load('VF_HotWT7.mat');
+VF_HotWT7 = Data.VF_HotWT7;
+clear('Data')
 
 
-Data6 = load('VF_HotWT10.mat');
-VF_HotWT10 = Data6.VF_HotWT10;
-clear('Data6')
+Data = load('VF_HotWT10.mat');
+VF_HotWT10 = Data.VF_HotWT10;
+clear('Data')
 
-
-Data8 = load('VF_SLPIVASL.mat');
-VF_SLPIVASL = Data8.VF_SLPIVASL;
-clear('Data8')
-
-Data9 = load('VF_SonicASL.mat');
-VF_SonicASL = Data9.VF_SonicASL;
-clear('Data9')
-%% Long decomposition
-VF_HotWT7uprimelong = VF_HotWT7.u - mean(VF_HotWT7.u,2);
-VF_HotWT7wprimelong = VF_HotWT7.w;
-VF_HotWT10uprimelong = VF_HotWT10.u - mean(VF_HotWT10.u,2);
-VF_HotWT10wprimelong = VF_HotWT10.w;
-VF_SLPIVASLuprimelong = VF_SLPIVASL.uprime;
-VF_SLPIVASLwprimelong = VF_SLPIVASL.w;
-
-%% Calculating lambda_T
-lambda_T_WT7 = zeros(size(VF_HotWT7.uprime, 1), 1);
-eta_WT7 = zeros(size(VF_HotWT7.uprime, 1), 1);
-
-for i = 1:size(VF_HotWT7.uprime, 1)
-
-    current_row_epsilon = mean([VF_HotWT7.epsilon_str{i, :}{:}],2);
-    
-    lambda_T_WT7(i) = rms(VF_HotWT7.uprime(i,:),2)*sqrt(15*VF_HotWT7.nu/current_row_epsilon);
-    eta_WT7(i)= (VF_HotWT7.nu^3/current_row_epsilon)^0.25;
-end
-
-
-lambda_T_WT10 = zeros(size(VF_HotWT10.uprime, 1), 1);
-eta_WT10 = zeros(size(VF_HotWT10.uprime, 1), 1);
-
-for i = 1:size(VF_HotWT10.uprime, 1)
-
-    current_row_epsilon = mean([VF_HotWT10.epsilon_str{i, :}{:}],2);
-    
-    lambda_T_WT10(i) = rms(VF_HotWT10.uprime(i,:),2)*sqrt(15*VF_HotWT10.nu/current_row_epsilon);
-    eta_WT10(i)= (VF_HotWT10.nu^3/current_row_epsilon)^0.25;
-end
-
-
-current_row_epsilon_SonicASL = mean([VF_SonicASL.epsilon_str{1, :}{:}],2);
-lambda_T_ASL = rms(VF_SonicASL.uprime(:,1),1)*sqrt(15*VF_SonicASL.nu/current_row_epsilon_SonicASL);
-eta_ASL = (VF_SonicASL.nu^3/current_row_epsilon_SonicASL)^0.25;
-% lambda_T_ASL = rms(VF_SLPIVASL.uprime(7,25,:),3)*sqrt(15*VF_SonicASL.nu/current_row_epsilon_SonicASL)
-%% Choping the signal into lambda_T
+%% Chopping the signal into L
 
 T_domain_WT7 = (0:1:size(VF_HotWT7.u,2)-1)*1/VF_HotWT7.fs;
 X_domain_WT7 = mean(VF_HotWT7.u,2)*T_domain_WT7;
@@ -62,197 +27,99 @@ T_domain_WT10 = (0:1:size(VF_HotWT10.u,2)-1)*1/VF_HotWT10.fs;
 X_domain_WT10 = mean(VF_HotWT10.u,2)*T_domain_WT10;
 res_WT10 = X_domain_WT10(:,2)-X_domain_WT10(:,1);
 
-T_domain_ASL = (0:1:size(VF_SLPIVASL.u,3)-1)*1/VF_SLPIVASL.fs;
-T_domain_ASL = reshape(T_domain_ASL,1,1,[]);
-X_domain_ASL = mean(VF_SLPIVASL.u,3).*T_domain_ASL;
-res_ASL = X_domain_ASL(:,:,2)-X_domain_ASL(:,:,1);
+VF_HotWT7uprime_chopped = cell(size(VF_HotWT7.z,1),1);
+VF_HotWT7wprime_chopped = cell(size(VF_HotWT7.z,1),1);
+VF_HotWT10uprime_chopped = cell(size(VF_HotWT10.z,1),1);
+VF_HotWT10wprime_chopped = cell(size(VF_HotWT10.z,1),1);
 
 
-VF_HotWT7uprimeshort = cell(size(VF_HotWT7.z,1), 1);
-VF_HotWT7wprimeshort = cell(size(VF_HotWT7.z,1), 1);
-VF_HotWT10uprimeshort = cell(size(VF_HotWT10.z,1), 1);
-VF_HotWT10wprimeshort = cell(size(VF_HotWT10.z,1), 1);
-VF_SLPIVASLuprimeshort = cell(size(VF_SLPIVASL.z,1), 1);
-VF_SLPIVASLwprimeshort = cell(size(VF_SLPIVASL.z,1), 1);
-
-for i = 1:size(VF_SLPIVASLuprimeshort,1)
-    VF_SLPIVASLuprimeshort{i} = cell(1, size(VF_SLPIVASL.u,2));
-    VF_SLPIVASLwprimeshort{i} = cell(1, size(VF_SLPIVASL.u,2));
-end
-
-C = zeros();
-% figure
-% set(gcf,'Position',[814,534,806,379])
-% axes('Position',[0.064516129032258,0.12664907651715,0.915632754342432,0.798350923482849])
-
-l0WT7 = 0.7;%med = 0.3, long = 0.7, long-long = 1.2
-l0WT10 = 0.7;%med = 0.3, long = 0.7, long-long = 1.2
-l0ASL = 0.72;
-
-c0WT7 = 3;
-c0WT10 = 3;
-c0ASL = 3;
+LWT7 = 0.7;
 
 for z = 1: size(VF_HotWT7.z,1)
     
-%     ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
-    ratio_WT7= X_domain_WT7(z,:) / l0WT7;
+
+    ratio_WT7= X_domain_WT7(z,:) / LWT7;
     unitindex_WT7 = find(ratio_WT7 >= 1, 1, 'first');
     unitindex_WT7 = unitindex_WT7 - 1;
     
     for s = 1 : floor(size(VF_HotWT7.u(z,:),2)/unitindex_WT7)
-        VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7) = ...
+
+        VF_HotWT7uprime_chopped{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7) = ...
             VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)-...
-            mean(VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7),2)+1e-6*rand(1,unitindex_WT7);%%added random value useful when I delete zero arrays
-        
-        VF_HotWT7wprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7) = ...
+            mean(VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7),2);
+
+        VF_HotWT7wprime_chopped{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7) = ...
             VF_HotWT7.w(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)-...
-            mean(VF_HotWT7.w(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7),2)+1e-6*rand(1,unitindex_WT7);
-        
-        
-%         plot(X_domain_WT7(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)/l0WT7,...
-%             VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7),'linewidth',2)
-%         hold on
-%         plot(X_domain_WT7(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)/l0WT7,...
-%             VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7),'linewidth',2)
-% 
-%         plot(X_domain_WT7(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)/l0WT7,...
-%             VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)-mean(VF_HotWT7.u(z,:),2),'linewidth',2)
-%         legend(sprintf('u[m/s],H-W(m1) z$/\\delta$ = %.2f',VF_HotWT7.z(z,1)/VF_HotWT7.delta),...
-%             sprintf('$\\mathrm{u}^{\\prime}_{\\mathrm{Local}}\\mathrm{[m/s]}$,H-W(m1) $\\mathrm{z}/\\delta$ = %.2f',VF_HotWT7.z(z,1)/VF_HotWT7.delta),...
-%             sprintf('$\\mathrm{u}^{\\prime}_{\\mathrm{Global}}\\mathrm{[m/s]}$,H-W(m1) $\\mathrm{z}/\\delta$ = %.2f',VF_HotWT7.z(z,1)/VF_HotWT7.delta),...
-%             'Interpreter','latex','FontSize',10,'Position',...
-%             [0.69418761794644,0.810046174733969,0.271111721158469,0.096306066085292],...
-%             'Numcolumns',1,'Orientation','vertical','color','none');
-%         xlabel('x/L','Interpreter','latex')
-%         ylabel('$\mathrm{u},\mathrm{u}^{\prime}$[m/s]','Interpreter','latex')
-%         set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on','YGrid','on')
+            mean(VF_HotWT7.w(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7),2);
 
-%         plot(X_domain_WT7(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)/(c0WT7*lambda_T_WT7(z,1)),...
-%         VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7),'linewidth',2)
-%         hold on
-%         plot(X_domain_WT7(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)/(c0WT7*lambda_T_WT7(z,1)),...
-%             VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7),'linewidth',2)
-% 
-%         plot(X_domain_WT7(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)/(c0WT7*lambda_T_WT7(z,1)),...
-%             VF_HotWT7.u(z,(s-1)*unitindex_WT7+1:(s)*unitindex_WT7)-mean(VF_HotWT7.u(z,:),2),'linewidth',2)
-%         legend(sprintf('u[m/s],H-W(m1) z$/\\delta$ = %.2f',VF_HotWT7.z(z,1)/VF_HotWT7.delta),...
-%             sprintf('$\\mathrm{u}^{\\prime}_{\\mathrm{Local}}\\mathrm{[m/s]}$,H-W(m1) $\\mathrm{z}/\\delta$ = %.2f',VF_HotWT7.z(z,1)/VF_HotWT7.delta),...
-%             sprintf('$\\mathrm{u}^{\\prime}_{\\mathrm{Global}}\\mathrm{[m/s]}$,H-W(m1) $\\mathrm{z}/\\delta$ = %.2f',VF_HotWT7.z(z,1)/VF_HotWT7.delta),...
-%             'Interpreter','latex','FontSize',10,'Position',...
-%             [0.69418761794644,0.810046174733969,0.271111721158469,0.096306066085292],...
-%             'Numcolumns',1,'Orientation','vertical','color','none');
-%         xlabel('x/L','Interpreter','latex')
-%         ylabel('$\mathrm{u},\mathrm{u}^{\prime}$[m/s]','Interpreter','latex')
-%         set(gca,'TickLabelInterpreter','latex','FontSize',13,'XGrid','on','YGrid','on')
-        
-        R = corrcoef(VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7)',...
-            VF_HotWT7wprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7)');
-        C(z,s) = R(1,2);
     end
-    %Add ks density
+
     
 end
 
 
-for z=1:size(VF_HotWT7.z,1)
-    
-    VF_HotWT7.z(z)/VF_HotWT7.delta
-    R = corrcoef(VF_HotWT7uprimeshort{z},VF_HotWT7wprimeshort{z})
-    
-end
-
+LWT10 = 0.7;
 for z = 1: size(VF_HotWT10.z,1)
     
-%     ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
-    ratio_WT10 = X_domain_WT10(z,:) / l0WT10;
+
+    ratio_WT10 = X_domain_WT10(z,:) / LWT10;
     unitindex_WT10 = find(ratio_WT10 >= 1, 1, 'first');
     unitindex_WT10 = unitindex_WT10 - 1;
     
     for s = 1 : floor(size(VF_HotWT10.u(z,:),2)/unitindex_WT10)
-        VF_HotWT10uprimeshort{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10) = ...
+        VF_HotWT10uprime_chopped{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10) = ...
             VF_HotWT10.u(z,(s-1)*unitindex_WT10+1:(s)*unitindex_WT10)-...
-            mean(VF_HotWT10.u(z,(s-1)*unitindex_WT10+1:(s)*unitindex_WT10),2)+1e-6*rand(1,unitindex_WT10);
+            mean(VF_HotWT10.u(z,(s-1)*unitindex_WT10+1:(s)*unitindex_WT10),2);
         
-        VF_HotWT10wprimeshort{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10) = ...
+        VF_HotWT10wprime_chopped{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10) = ...
             VF_HotWT10.w(z,(s-1)*unitindex_WT10+1:(s)*unitindex_WT10)-...
-            mean(VF_HotWT10.w(z,(s-1)*unitindex_WT10+1:(s)*unitindex_WT10),2)+1e-6*rand(1,unitindex_WT10);
+            mean(VF_HotWT10.w(z,(s-1)*unitindex_WT10+1:(s)*unitindex_WT10),2);        
     end
     
 end
 
+%% Saving & Loading
+% The required joint distributions for making the signal can be load here.
+% Otherwise, you can run next two sections to make them.
+
+VF_HotWT7 = struct(VF_HotWT7);
+VF_HotWT10 = struct(VF_HotWT10);
+
+save('jpdfs_HotWT7.mat','duwrtlocalmaxmin_HotWT7',...
+    'value_pairs_cell_HotWT7','duNN_HotWT7','VF_HotWT7','T_domain_WT7',...
+    'X_domain_WT7','res_WT7')
 
 
-for z=1:size(VF_HotWT10.z,1)
-    
-    VF_HotWT10.z(z)/VF_HotWT10.delta
-    R = corrcoef(VF_HotWT10uprimeshort{z},VF_HotWT10wprimeshort{z})
-    
-end
-
-for z = 1: size(VF_SLPIVASL.z,1)
-    
-    %     ratio_ASL = X_domain_ASL(z,:,:) ./ lambda_T_ASL(1,1);
-    ratio_ASL = X_domain_ASL(z,:,:) ./ l0ASL;
-    ratio_ASL_squeezed = squeeze(ratio_ASL); % Convert to 52 × 80000 matrix
-    
-    % Initialize the result vector with NaN (in case no values > 1 are found)
-    unitindex_ASL = NaN(1, size(ratio_ASL_squeezed,1));
-    
-    % Loop through each column to find the first index where value > 1
-    for col = 1:size(ratio_ASL_squeezed,1)
-        idx = find(ratio_ASL_squeezed(col, :) >= 1, 1, 'first'); % Find first occurrence
-        if ~isempty(idx)
-            unitindex_ASL(col) = idx -1 ; % Store the index if found
-        end
-    end
-    
-    
-    for j = 1:size(unitindex_ASL,2)
-        for s = 1 : floor(size(VF_SLPIVASL.u(z,j,:),3)/unitindex_ASL(1,j))
-            VF_SLPIVASLuprimeshort{z}{j}((s-1)*unitindex_ASL(1,j)+1:(s)*unitindex_ASL(1,j)) = ...
-                VF_SLPIVASL.u(z,j,(s-1)*unitindex_ASL(1,j)+1:(s)*unitindex_ASL(1,j))-...
-                mean(VF_SLPIVASL.u(z,j,(s-1)*unitindex_ASL(1,j)+1:(s)*unitindex_ASL(1,j)),3)+1e-6*rand(1,1,unitindex_ASL(j));
-            
-            VF_SLPIVASLwprimeshort{z}{j}((s-1)*unitindex_ASL(1,j)+1:(s)*unitindex_ASL(1,j)) = ...
-                VF_SLPIVASL.w(z,j,(s-1)*unitindex_ASL(1,j)+1:(s)*unitindex_ASL(1,j))-...
-                mean(VF_SLPIVASL.w(z,j,(s-1)*unitindex_ASL(1,j)+1:(s)*unitindex_ASL(1,j)),3)+1e-6*rand(1,1,unitindex_ASL(j));
-            
-        end
-    end
-end
+save('jpdfs_HotWT10.mat','duwrtlocalmaxmin_HotWT10',...
+    'value_pairs_cell_HotWT10','duNN_HotWT10','VF_HotWT10','T_domain_WT10',...
+    'X_domain_WT10','res_WT10')
 
 
 
-for z=1:size(VF_SLPIVASL.z,1)
-    
-    VF_SLPIVASL.z(z)/VF_SLPIVASL.delta
-    R = corrcoef(VF_SLPIVASLuprimeshort{z}{25},VF_SLPIVASLwprimeshort{z}{25})
-    
-end
+load('jpdfs_HotWT7.mat')
+load('jpdfs_HotWT10.mat')
+
 %% min-max distribution short
 
 value_pairs_cell_HotWT7 = cell(size(VF_HotWT7.z,1), 1);
 
 for z = 1:size(VF_HotWT7.z,1)
     
-%     ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
-    ratio_WT7= X_domain_WT7(z,:) / l0WT7;
+    ratio_WT7= X_domain_WT7(z,:) / LWT7;
     unitindex_WT7 = find(ratio_WT7 >= 1, 1, 'first');
     unitindex_WT7 = unitindex_WT7 - 1;
     % Initialize an empty matrix for storing value pairs at this elevation
     value_pairs = [];
     
     
-    for s = 1 : floor(size(VF_HotWT7uprimeshort{z},2)/unitindex_WT7)
+    for s = 1 : floor(size(VF_HotWT7uprime_chopped{z},2)/unitindex_WT7)
         % Find local maxima and minima for the current elevation
-        [peaks, peak_locs] = findpeaks(VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7)); % Local maxima from long should be changed to short
-        [inverted_peaks, min_locs] = findpeaks(-VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7)); % Local minima
+        [peaks, peak_locs] = findpeaks(VF_HotWT7uprime_chopped{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7)); % Local maxima
+        [inverted_peaks, min_locs] = findpeaks(-VF_HotWT7uprime_chopped{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7)); % Local minima
         valleys = -inverted_peaks;
         
         % Check if there are any maxima or minima found
         if isempty(peak_locs) || isempty(min_locs)
-%             disp(['No local maxima or minima found at elevation z = ', num2str(z)]);
             continue
         else
             % Start from the first max or min
@@ -293,23 +160,22 @@ value_pairs_cell_HotWT10 = cell(size(VF_HotWT10.z,1), 1);
 
 for z = 1:size(VF_HotWT10.z,1)
     
-%     ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
-    ratio_WT10 = X_domain_WT10(z,:) / l0WT10;
+
+    ratio_WT10 = X_domain_WT10(z,:) / LWT10;
     unitindex_WT10 = find(ratio_WT10 >= 1, 1, 'first');
     unitindex_WT10 = unitindex_WT10 - 1;
     % Initialize an empty matrix for storing value pairs at this elevation
     value_pairs = [];
     
-    for s = 1 : floor(size(VF_HotWT10uprimeshort{z},2)/unitindex_WT10)
+    for s = 1 : floor(size(VF_HotWT10uprime_chopped{z},2)/unitindex_WT10)
         % Find local maxima and minima for the current elevation
-        [peaks, peak_locs] = findpeaks(VF_HotWT10uprimeshort{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10)); % Local maxima
-        [inverted_peaks, min_locs] = findpeaks(-VF_HotWT10uprimeshort{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10)); % Local minima
+        [peaks, peak_locs] = findpeaks(VF_HotWT10uprime_chopped{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10)); % Local maxima
+        [inverted_peaks, min_locs] = findpeaks(-VF_HotWT10uprime_chopped{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10)); % Local minima
         valleys = -inverted_peaks;
         
         
         % Check if there are any maxima or minima found
         if isempty(peak_locs) || isempty(min_locs)
-%             disp(['No local maxima or minima found at elevation z = ', num2str(z)]);
             continue
         else
             % Start from the first max or min
@@ -323,7 +189,7 @@ for z = 1:size(VF_HotWT10.z,1)
                     value_pairs = [value_pairs; peaks(i), valleys(j)]; % [value of max, value of min]
                     i = i + 1;
                     if i <= length(peak_locs) % Only proceed if i is valid
-                        value_pairs = [value_pairs; peaks(i), valleys(j)]; % [value of next max, value of min]
+                        value_pairs = [value_pairs; peaks(i), valleys(j)]; %#ok<*AGROW> % [value of next max, value of min]
                         j = j + 1;
                     end
                 end
@@ -343,94 +209,17 @@ for z = 1:size(VF_HotWT10.z,1)
     
     
     % Store the value pairs in the cell array for this elevation
-    value_pairs_cell_HotWT10{z} = value_pairs;
-    
-    
+    value_pairs_cell_HotWT10{z} = value_pairs; 
 end
 
 
+%% Plotting Fig.4 in the repository
+% To use the 'getPyPlot_cMap', you need to give the direction of the python
+% environment. 
+currentDir = pwd
+pythonPath = fullfile(currentDir, '.venv', 'Scripts', 'python.exe');
+pythonPath = ['"', pythonPath , '"']
 
-value_pairs_cell_SLPIVASL = cell(size(VF_SLPIVASL.z,1), 1);
-
-for z = 1:size(VF_SLPIVASL.z,1)
-    
-    
-    ratio_ASL = X_domain_ASL(z,:,:) ./ l0ASL;
-    ratio_ASL_squeezed = squeeze(ratio_ASL); % Convert to 52 × 80000 matrix
-    
-    % Initialize the result vector with NaN (in case no values > 1 are found)
-    unitindex_ASL = NaN(1, size(ratio_ASL_squeezed,1));
-    
-    % Loop through each column to find the first index where value > 1
-    for col = 1:size(ratio_ASL_squeezed,1)
-        idx = find(ratio_ASL_squeezed(col, :) >= 1, 1, 'first'); % Find first occurrence
-        if ~isempty(idx)
-            unitindex_ASL(col) = idx -1 ; % Store the index if found
-        end
-    end
-    % Initialize an empty matrix for storing value pairs at this elevation
-    value_pairs = [];
-    
-    for k = 25%1:size(unitindex_ASL,2)
-        
-        for s = 1 : floor(size(VF_SLPIVASLuprimeshort{z}{k},2)/unitindex_ASL(1,k))
-            % Find local maxima and minima for the current elevation
-            [peaks, peak_locs] = findpeaks(reshape(VF_SLPIVASLuprimeshort{z}{k}((s-1)*unitindex_ASL(1,k)+1:(s)*unitindex_ASL(1,k)),1,[])); % Local maxima
-            [inverted_peaks, min_locs] = findpeaks(reshape(-VF_SLPIVASLuprimeshort{z}{k}((s-1)*unitindex_ASL(1,k)+1:(s)*unitindex_ASL(1,k)),1,[]));
-            valleys = -inverted_peaks;
-
-            % Check if there are any maxima or minima found
-            if isempty(peak_locs) || isempty(min_locs)
-%                 disp(['No local maxima or minima found at elevation z = ', num2str(z)]);
-                continue
-            else
-                % Start from the first max or min
-                i = 1; % index for max_locs
-                j = 1; % index for min_locs
-                
-                % Determine the correct sequence
-                if peak_locs(1) < min_locs(1)
-                    % Case: First local maximum comes before first local minimum
-                    while i <= length(peak_locs) && j <= length(min_locs)
-                        value_pairs = [value_pairs; peaks(i), valleys(j)]; % [value of max, value of min]
-                        i = i + 1;
-                        if i <= length(peak_locs) % Only proceed if i is valid
-                            value_pairs = [value_pairs; peaks(i), valleys(j)]; % [value of next max, value of min]
-                            j = j + 1;
-                        end
-                    end
-                else
-                    % Case: First local minimum comes before first local maximum
-                    while i <= length(peak_locs) && j <= length(min_locs)
-                        value_pairs = [value_pairs; peaks(i), valleys(j)]; % [value of max, value of min]
-                        j = j + 1;
-                        if j <= length(min_locs) % Only proceed if j is valid
-                            value_pairs = [value_pairs; peaks(i), valleys(j)]; % [value of max, value of next min]
-                            i = i + 1;
-                        end
-                    end
-                end
-            end
-        end
-    end
-    
-    % Store the value pairs in the cell array for this elevation
-    value_pairs_cell_SLPIVASL{z} = value_pairs;
-    
-    
-end
-
-
-%% Saving & Loading
-
-save('value_pairs_cell_SLPIVASL.mat','value_pairs_cell_SLPIVASL')
-
-
-load('value_pairs_cell_SLPIVASL.mat')
-
-
-%% ploting ( WT7,WT10)
-    
 nbins = 1000;
 data_HotWT7_1 = [value_pairs_cell_HotWT7{1}(:,2)/VF_HotWT7.u_tau, value_pairs_cell_HotWT7{1}(:,1)/VF_HotWT7.u_tau]; % Example correlated non-Gaussian data
 
@@ -464,7 +253,7 @@ contour(X_grid, Y_grid, pdf_hist_HotWT7_1', 100, 'LineWidth', 3); % Contour of P
 
 % Apply custom colormap
 cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+    pythonPath);
 cmap2 = flip(cmap2);
 colormap(gca, cmap2);
 caxis([0 0.5])
@@ -494,8 +283,6 @@ text(0.018018018018018,0.932432432432432,0,'(a)',...
 xlim([-6 6])
 ylim([-6 6])
 
-
-
 data_HotWT10_2 = [value_pairs_cell_HotWT10{2}(:,2)/VF_HotWT10.u_tau, value_pairs_cell_HotWT10{2}(:,1)/VF_HotWT10.u_tau]; % Example correlated non-Gaussian data
 [counts, X_edges, Y_edges] = histcounts2(data_HotWT10_2(:,1), data_HotWT10_2(:,2), nbins);
 
@@ -524,7 +311,7 @@ contour(X_grid, Y_grid, pdf_hist_HotWT10_2', 100, 'LineWidth', 3); % Contour of 
 
 % Apply custom colormap
 cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+    pythonPath);
 cmap2 = flip(cmap2);
 colormap(gca, cmap2);
 caxis([0 0.5])
@@ -543,296 +330,25 @@ set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
 xlim([-6 6])
 ylim([-6 6])
 
-
-
-%% ploting (ALL: WT7,WT10,ASL)
-
-nbins = 1000;
-data_HotWT7_1 = [value_pairs_cell_HotWT7{1}(:,2)/VF_HotWT7.u_tau, value_pairs_cell_HotWT7{1}(:,1)/VF_HotWT7.u_tau]; % Example correlated non-Gaussian data
-
-% Compute 2D histogram (counts per bin)
-[counts, X_edges, Y_edges] = histcounts2(data_HotWT7_1(:,1), data_HotWT7_1(:,2), nbins);
-
-% Compute bin centers
-X_centers = (X_edges(1:end-1) + X_edges(2:end)) / 2;
-Y_centers = (Y_edges(1:end-1) + Y_edges(2:end)) / 2;
-[X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
-
-% Compute bin width (assumes uniform bins)
-dx = mean(diff(X_edges)); % Bin width in X
-dy = mean(diff(Y_edges)); % Bin width in Y
-bin_area = dx * dy; % Area of each bin
-
-% Normalize histogram to create probability density function (PDF)
-pdf_hist_HotWT7_1 = counts / (sum(counts(:)) * bin_area);
-
-% Compute the total probability mass (should be ≈ 1)
-total_probability = sum(pdf_hist_HotWT7_1(:)) * bin_area;
-disp(['Total Probability Mass (should be ≈ 1): ', num2str(total_probability)]);
-
-figure;
-
-set(gcf,'Position',[800,317,797,582])
-axes('Position',[0.066478460895022,0.506680943904672,0.278565453785027,0.41875])
-scatter(data_HotWT7_1(:,1), data_HotWT7_1(:,2), 5, [0.0,1,0.0],'filled'); % Scatter original data
-hold on;
-contour(X_grid, Y_grid, pdf_hist_HotWT7_1', 100, 'LineWidth', 3); % Contour of PDF
-
-% Apply custom colormap
-cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
-cmap2 = flip(cmap2);
-colormap(gca, cmap2);
-caxis([0 0.5])
-hcb2 = colorbar;
-hcb2.Location = "north";
-hcb2.Position = [0.095357590966123,0.924460431654677,0.885821831869511,0.025903057081893];
-title(hcb2, 'p.d.f.', 'Interpreter', 'Latex', 'FontSize', 20, 'position',...
-    [-29.625000000000938,-4.775,0])
-hcb2.TickLabelInterpreter = 'latex';
-hcb2.TickLength = 0;
-hcb2.Label.Interpreter = 'latex';
-hcb2.AxisLocation = 'out';
-axis equal
-set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
-    'XGrid','on','YGrid','on','XMinorGrid','on','YMinorGrid','on')
-% xlabel('Local min u$^{\prime}$','Interpreter','latex','FontSize',15)
-ylabel('Local max u$^{\prime}/\mathrm{u}_{\tau}$','Interpreter','latex','FontSize',15)
-text(0.018018018018018,0.932432432432432,0,'(a)',...
-    'Units','Normalized','Interpreter','LaTex','FontSize',15);
-xlim([-6 6])
-ylim([-6 6])
-
-data_HotWT7_9 = [value_pairs_cell_HotWT7{9}(:,2)/VF_HotWT7.u_tau, value_pairs_cell_HotWT7{9}(:,1)/VF_HotWT7.u_tau]; % Example correlated non-Gaussian data
-[counts, X_edges, Y_edges] = histcounts2(data_HotWT7_9(:,1), data_HotWT7_9(:,2), nbins);
-
-% Compute bin centers
-X_centers = (X_edges(1:end-1) + X_edges(2:end)) / 2;
-Y_centers = (Y_edges(1:end-1) + Y_edges(2:end)) / 2;
-[X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
-
-% Compute bin width (assumes uniform bins)
-dx = mean(diff(X_edges)); % Bin width in X
-dy = mean(diff(Y_edges)); % Bin width in Y
-bin_area = dx * dy; % Area of each bin
-
-% Normalize histogram to create probability density function (PDF)
-pdf_hist_HotWT7_9 = counts / (sum(counts(:)) * bin_area);
-
-% Compute the total probability mass (should be ≈ 1)
-total_probability = sum(pdf_hist_HotWT7_9(:)) * bin_area;
-disp(['Total Probability Mass (should be ≈ 1): ', num2str(total_probability)]);
-
-
-axes('Position',[0.066478460895023,0.072022485104706,0.278565453785027,0.418750000000002])
-scatter(data_HotWT7_9(:,1), data_HotWT7_9(:,2), 5, 'g','filled'); % Scatter original data
-hold on;
-contour(X_grid, Y_grid, pdf_hist_HotWT7_9', 100, 'LineWidth', 3); % Contour of PDF
-% Apply custom colormap
-cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
-cmap2 = flip(cmap2);
-colormap(gca, cmap2);
-caxis([0 0.5])
-axis equal
-set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
-    'XGrid','on','YGrid','on','XMinorGrid','on','YMinorGrid','on')
-text(0.018018018018018,0.932432432432432,0,'(b)',...
-    'Units','Normalized','Interpreter','LaTex','FontSize',15);
-xlabel('Local min u$^{\prime}/\mathrm{u}_{\tau}$','Interpreter','latex','FontSize',15)
-ylabel('Local max u$^{\prime}/\mathrm{u}_{\tau}$','Interpreter','latex','FontSize',15)
-xlim([-6 6])
-ylim([-6 6])
-
-
-data_HotWT10_2 = [value_pairs_cell_HotWT10{2}(:,2)/VF_HotWT10.u_tau, value_pairs_cell_HotWT10{2}(:,1)/VF_HotWT10.u_tau]; % Example correlated non-Gaussian data
-[counts, X_edges, Y_edges] = histcounts2(data_HotWT10_2(:,1), data_HotWT10_2(:,2), nbins);
-
-% Compute bin centers
-X_centers = (X_edges(1:end-1) + X_edges(2:end)) / 2;
-Y_centers = (Y_edges(1:end-1) + Y_edges(2:end)) / 2;
-[X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
-
-% Compute bin width (assumes uniform bins)
-dx = mean(diff(X_edges)); % Bin width in X
-dy = mean(diff(Y_edges)); % Bin width in Y
-bin_area = dx * dy; % Area of each bin
-
-% Normalize histogram to create probability density function (PDF)
-pdf_hist_HotWT10_2 = counts / (sum(counts(:)) * bin_area);
-
-% Compute the total probability mass (should be ≈ 1)
-total_probability = sum(pdf_hist_HotWT10_2(:)) * bin_area;
-disp(['Total Probability Mass (should be ≈ 1): ', num2str(total_probability)]);
-
-
-axes('Position',[0.38266415725637,0.506680943904679,0.278565453785019,0.418750000000001])
-scatter(data_HotWT10_2(:,1), data_HotWT10_2(:,2), 5, 'g','filled'); % Scatter original data
-hold on;
-contour(X_grid, Y_grid, pdf_hist_HotWT10_2', 100, 'LineWidth', 3); % Contour of PDF
-
-% Apply custom colormap
-cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
-cmap2 = flip(cmap2);
-colormap(gca, cmap2);
-caxis([0 0.5])
-axis equal
-text(0.018018018018018,0.932432432432432,0,'(c)',...
-    'Units','Normalized','Interpreter','LaTex','FontSize',15);
-set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
-    'XGrid','on','YGrid','on','XMinorGrid','on','YMinorGrid','on')
-xlim([-6 6])
-ylim([-6 6])
-
-data_HotWT10_9 = [value_pairs_cell_HotWT10{9}(:,2)/VF_HotWT10.u_tau, value_pairs_cell_HotWT10{9}(:,1)/VF_HotWT10.u_tau]; % Example correlated non-Gaussian data
-[counts, X_edges, Y_edges] = histcounts2(data_HotWT10_9(:,1), data_HotWT10_9(:,2), nbins);
-
-% Compute bin centers
-X_centers = (X_edges(1:end-1) + X_edges(2:end)) / 2;
-Y_centers = (Y_edges(1:end-1) + Y_edges(2:end)) / 2;
-[X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
-
-% Compute bin width (assumes uniform bins)
-dx = mean(diff(X_edges)); % Bin width in X
-dy = mean(diff(Y_edges)); % Bin width in Y
-bin_area = dx * dy; % Area of each bin
-
-% Normalize histogram to create probability density function (PDF)
-pdf_hist_HotWT10_9 = counts / (sum(counts(:)) * bin_area);
-
-% Compute the total probability mass (should be ≈ 1)
-total_probability = sum(pdf_hist_HotWT10_9(:)) * bin_area;
-disp(['Total Probability Mass (should be ≈ 1): ', num2str(total_probability)]);
-
-
-axes('Position',[0.38266415725637,0.071799982694269,0.278565453785019,0.418750000000002])
-scatter(data_HotWT10_9(:,1), data_HotWT10_9(:,2), 5, 'g','filled'); % Scatter original data
-hold on;
-contour(X_grid, Y_grid, pdf_hist_HotWT10_9', 100, 'LineWidth', 3); % Contour of PDF
-
-% Apply custom colormap
-cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
-cmap2 = flip(cmap2);
-colormap(gca, cmap2);
-caxis([0 0.5])
-axis equal
-set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
-    'XGrid','on','YGrid','on','XMinorGrid','on','YMinorGrid','on')
-text(0.018018018018018,0.932432432432432,0,'(d)',...
-    'Units','Normalized','Interpreter','LaTex','FontSize',15);
-xlabel('Local min u$^{\prime}/\mathrm{u}_{\tau}$','Interpreter','latex','FontSize',15)
-xlim([-6 6])
-ylim([-6 6])
-
-data_SLPIVASL_7 = [value_pairs_cell_SLPIVASL{7}(:,2)/VF_SLPIVASL.u_tau, value_pairs_cell_SLPIVASL{7}(:,1)/VF_SLPIVASL.u_tau]; % Example correlated non-Gaussian data
-[counts, X_edges, Y_edges] = histcounts2(data_SLPIVASL_7(:,1), data_SLPIVASL_7(:,2), nbins);
-
-% Compute bin centers
-X_centers = (X_edges(1:end-1) + X_edges(2:end)) / 2;
-Y_centers = (Y_edges(1:end-1) + Y_edges(2:end)) / 2;
-[X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
-
-% Compute bin width (assumes uniform bins)
-dx = mean(diff(X_edges)); % Bin width in X
-dy = mean(diff(Y_edges)); % Bin width in Y
-bin_area = dx * dy; % Area of each bin
-
-% Normalize histogram to create probability density function (PDF)
-pdf_hist_SLPIVASL_7 = counts / (sum(counts(:)) * bin_area);
-
-% Compute the total probability mass (should be ≈ 1)
-total_probability = sum(pdf_hist_SLPIVASL_7(:)) * bin_area;
-disp(['Total Probability Mass (should be ≈ 1): ', num2str(total_probability)]);
-
-
-axes('Position',[0.703868674194876,0.506680943904679,0.278565453785017,0.418750000000001])
-scatter(data_SLPIVASL_7(:,1), data_SLPIVASL_7(:,2), 5, 'g','filled'); % Scatter original data
-hold on;
-contour(X_grid, Y_grid, pdf_hist_SLPIVASL_7', 100, 'LineWidth', 3); % Contour of PDF
-
-% Apply custom colormap
-cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
-cmap2 = flip(cmap2);
-colormap(gca, cmap2);
-caxis([0 0.5])
-axis equal
-text(0.018018018018018,0.932432432432432,0,'(e)',...
-    'Units','Normalized','Interpreter','LaTex','FontSize',15);
-set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
-    'XGrid','on','YGrid','on','XMinorGrid','on','YMinorGrid','on')
-xlim([-6 6])
-ylim([-6 6])
-
-
-data_SLPIVASL_19 = [value_pairs_cell_SLPIVASL{19}(:,2)/VF_SLPIVASL.u_tau, value_pairs_cell_SLPIVASL{19}(:,1)/VF_SLPIVASL.u_tau]; % Example correlated non-Gaussian data
-[counts, X_edges, Y_edges] = histcounts2(data_SLPIVASL_19(:,1), data_SLPIVASL_19(:,2), nbins);
-
-% Compute bin centers
-X_centers = (X_edges(1:end-1) + X_edges(2:end)) / 2;
-Y_centers = (Y_edges(1:end-1) + Y_edges(2:end)) / 2;
-[X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
-
-% Compute bin width (assumes uniform bins)
-dx = mean(diff(X_edges)); % Bin width in X
-dy = mean(diff(Y_edges)); % Bin width in Y
-bin_area = dx * dy; % Area of each bin
-
-% Normalize histogram to create probability density function (PDF)
-pdf_hist_SLPIVASL_19 = counts / (sum(counts(:)) * bin_area);
-
-% Compute the total probability mass (should be ≈ 1)
-total_probability = sum(pdf_hist_SLPIVASL_19(:)) * bin_area;
-disp(['Total Probability Mass (should be ≈ 1): ', num2str(total_probability)]);
-
-
-axes('Position',[0.703868674194879,0.071799982694269,0.278565453785017,0.418750000000002])
-scatter(data_SLPIVASL_19(:,1), data_SLPIVASL_19(:,2), 5, 'g','filled'); % Scatter original data
-hold on;
-contour(X_grid, Y_grid, pdf_hist_SLPIVASL_19', 100, 'LineWidth', 3); % Contour of PDF
-
-% Apply custom colormap
-cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
-cmap2 = flip(cmap2);
-colormap(gca, cmap2);
-caxis([0 0.5])
-axis equal
-text(0.018018018018018,0.932432432432432,0,'(f)',...
-    'Units','Normalized','Interpreter','LaTex','FontSize',15);
-set(gca,'TickLabelInterpreter','latex','FontSize',15,'Box','on',...
-    'XGrid','on','YGrid','on','XMinorGrid','on','YMinorGrid','on')
-xlabel('Local min u$^{\prime}/\mathrm{u}_{\tau}$','Interpreter','latex','FontSize',15)
-xlim([-6 6])
-ylim([-6 6])
-
 %% du(next neighbor),du(min,max) distribution
-
-
 
 duwrtlocalmaxmin_HotWT7 = cell(size(VF_HotWT7.z,1), 1);
 duNN_HotWT7 = cell(size(VF_HotWT7.z,1), 1);
 
 for z = 1:size(VF_HotWT7.z,1)
 
-%     ratio_WT7= X_domain_WT7(z,:) / (c0WT7*lambda_T_WT7(z,1));
-    ratio_WT7= X_domain_WT7(z,:) / l0WT7;
+    ratio_WT7= X_domain_WT7(z,:) / LWT7;
     unitindex_WT7 = find(ratio_WT7 >= 1, 1, 'first');
     unitindex_WT7 = unitindex_WT7 - 1;
-    
-    
-    for s = 1 : floor(size(VF_HotWT7uprimeshort{z},2)/unitindex_WT7)
-        u_temp = VF_HotWT7uprimeshort{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7);
+   
+    for s = 1 : floor(size(VF_HotWT7uprime_chopped{z},2)/unitindex_WT7)
+        u_temp = VF_HotWT7uprime_chopped{z}((s-1)*unitindex_WT7+1:(s)*unitindex_WT7);
         [peaks, peak_locs] = findpeaks(u_temp); % Find local maxima
         [inverted_peaks, min_locs] = findpeaks(-u_temp); % Find local minima
         valleys = -inverted_peaks;
         if isempty(peak_locs) || isempty(min_locs)
-%             disp(['No local maxima or minima found at elevation z = ', num2str(z)]);
             continue
         else
-%             duNN_HotWT7{z}((s-1)*(unitindex_WT7-1)+1:(s)*(unitindex_WT7-1)) = abs(diff(u_temp));
             duNN_HotWT7{z} = [duNN_HotWT7{z},abs(diff(u_temp))];
 
             for c = 1:unitindex_WT7-1
@@ -842,7 +358,6 @@ for z = 1:size(VF_HotWT7.z,1)
                 if peak_locs(1,1) < min_locs(1,1)
                     if c <= peak_locs(1,1)
                         % Direct slope computation (signed)
-%                         duwrtlocalmaxmin_HotWT7{z}((s-1)*(unitindex_WT7-1)+c) = abs(u_temp(1,peak_locs(1,i)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT7{z} = [duwrtlocalmaxmin_HotWT7{z},abs(u_temp(1,peak_locs(1,i)) - u_temp(1,c))];
                     elseif ~isempty(i) || ~isempty(j)
                         % Compute both signed slopes
@@ -853,15 +368,12 @@ for z = 1:size(VF_HotWT7.z,1)
                         
                         % Select signed slope corresponding to min(abs())
                         [~, idx] = min(abs(slope_vals), [], 'includenan');
-%                         duwrtlocalmaxmin_HotWT7{z}((s-1)*(unitindex_WT7-1)+c)  = abs(slope_vals(idx));
                         duwrtlocalmaxmin_HotWT7{z} = [duwrtlocalmaxmin_HotWT7{z},abs(slope_vals(idx))];
                     else
-%                         duwrtlocalmaxmin_HotWT7{z}((s-1)*(unitindex_WT7-1)+c)  = abs(u_temp(1,min_locs(1,end)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT7{z} = [duwrtlocalmaxmin_HotWT7{z},abs(u_temp(1,min_locs(1,end)) - u_temp(1,c))];
                     end
                 else
                     if c <= min_locs(1,1)
-%                         duwrtlocalmaxmin_HotWT7{z}((s-1)*(unitindex_WT7-1)+c)  = abs(u_temp(1,min_locs(1,j)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT7{z} = [duwrtlocalmaxmin_HotWT7{z},abs(u_temp(1,min_locs(1,j)) - u_temp(1,c))];
                     elseif ~isempty(i) || ~isempty(j)
                         slope_vals = [
@@ -871,10 +383,9 @@ for z = 1:size(VF_HotWT7.z,1)
                         
                         % Select signed slope corresponding to min(abs())
                         [~, idx] = min(abs(slope_vals), [], 'includenan');
-%                         duwrtlocalmaxmin_HotWT7{z}((s-1)*(unitindex_WT7-1)+c)  = abs(slope_vals(idx));
+
                         duwrtlocalmaxmin_HotWT7{z}  = [duwrtlocalmaxmin_HotWT7{z},abs(slope_vals(idx))];
                     else
-%                         duwrtlocalmaxmin_HotWT7{z}((s-1)*(unitindex_WT7-1)+c)  = abs(u_temp(1,peak_locs(1,end)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT7{z} = [duwrtlocalmaxmin_HotWT7{z},abs(u_temp(1,peak_locs(1,end)) - u_temp(1,c))];
                     end
                 end
@@ -884,33 +395,27 @@ for z = 1:size(VF_HotWT7.z,1)
 end
 
 
-figure
-plot(duwrtlocalmaxmin_HotWT7{1},duNN_HotWT7{1},'k.')
-
-
 
 duwrtlocalmaxmin_HotWT10 = cell(size(VF_HotWT10.z,1), 1);
 duNN_HotWT10 = cell(size(VF_HotWT10.z,1), 1);
 
 for z = 1:size(VF_HotWT10.z,1)
 
-%     ratio_WT10 = X_domain_WT10(z,:) / (c0WT10*lambda_T_WT10(z,1));
-    ratio_WT10= X_domain_WT10(z,:) / l0WT10;
+    ratio_WT10= X_domain_WT10(z,:) / LWT10;
     unitindex_WT10 = find(ratio_WT10 >= 1, 1, 'first');
     unitindex_WT10 = unitindex_WT10 - 1;
     
     
-    for s = 1 : floor(size(VF_HotWT10uprimeshort{z},2)/unitindex_WT10)
-        u_temp = VF_HotWT10uprimeshort{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10);
+    for s = 1 : floor(size(VF_HotWT10uprime_chopped{z},2)/unitindex_WT10)
+        u_temp = VF_HotWT10uprime_chopped{z}((s-1)*unitindex_WT10+1:(s)*unitindex_WT10);
         [peaks, peak_locs] = findpeaks(u_temp); % Find local maxima
         [inverted_peaks, min_locs] = findpeaks(-u_temp); % Find local minima
         valleys = -inverted_peaks;
         if isempty(peak_locs) || isempty(min_locs)
-%             disp(['No local maxima or minima found at elevation z = ', num2str(z), ', index s = ', num2str(s)]);
             continue
         else
-%             duNN_HotWT10{z}((s-1)*(unitindex_WT10-1)+1:(s)*(unitindex_WT10-1)) = abs(diff(u_temp));
-            duNN_HotWT10{z}= [duNN_HotWT10{z},abs(diff(u_temp))];
+
+            duNN_HotWT10{z} = [duNN_HotWT10{z},abs(diff(u_temp))];
             for c = 1:unitindex_WT10-1
                 [~,i] = find(c <= peak_locs, 1, 'first');
                 [~,j] = find(c <= min_locs, 1, 'first');
@@ -918,7 +423,6 @@ for z = 1:size(VF_HotWT10.z,1)
                 if peak_locs(1,1) < min_locs(1,1)
                     if c <= peak_locs(1,1)
                         % Direct slope computation (signed)
-%                         duwrtlocalmaxmin_HotWT10{z}((s-1)*(unitindex_WT10-1)+c) = abs(u_temp(1,peak_locs(1,i)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT10{z} = [duwrtlocalmaxmin_HotWT10{z},abs(u_temp(1,peak_locs(1,i)) - u_temp(1,c))];
                     elseif ~isempty(i) || ~isempty(j)
                         % Compute both signed slopes
@@ -929,15 +433,13 @@ for z = 1:size(VF_HotWT10.z,1)
                         
                         % Select signed slope corresponding to min(abs())
                         [~, idx] = min(abs(slope_vals), [], 'includenan');
-%                         duwrtlocalmaxmin_HotWT10{z}((s-1)*(unitindex_WT10-1)+c)  = abs(slope_vals(idx));
+
                         duwrtlocalmaxmin_HotWT10{z} = [duwrtlocalmaxmin_HotWT10{z},abs(slope_vals(idx))];
                     else
-%                         duwrtlocalmaxmin_HotWT10{z}((s-1)*(unitindex_WT10-1)+c)  = abs(u_temp(1,min_locs(1,end)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT10{z} = [duwrtlocalmaxmin_HotWT10{z},abs(u_temp(1,min_locs(1,end)) - u_temp(1,c))];
                     end
                 else
                     if c <= min_locs(1,1)
-%                         duwrtlocalmaxmin_HotWT10{z}((s-1)*(unitindex_WT10-1)+c)  = abs(u_temp(1,min_locs(1,j)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT10{z} = [duwrtlocalmaxmin_HotWT10{z},abs(u_temp(1,min_locs(1,j)) - u_temp(1,c))];
                     elseif ~isempty(i) || ~isempty(j)
                         slope_vals = [
@@ -947,10 +449,8 @@ for z = 1:size(VF_HotWT10.z,1)
                         
                         % Select signed slope corresponding to min(abs())
                         [~, idx] = min(abs(slope_vals), [], 'includenan');
-%                         duwrtlocalmaxmin_HotWT10{z}((s-1)*(unitindex_WT10-1)+c)  = abs(slope_vals(idx));
                         duwrtlocalmaxmin_HotWT10{z} = [duwrtlocalmaxmin_HotWT10{z},abs(slope_vals(idx))];
                     else
-%                         duwrtlocalmaxmin_HotWT10{z}((s-1)*(unitindex_WT10-1)+c)  = abs(u_temp(1,peak_locs(1,end)) - u_temp(1,c));
                         duwrtlocalmaxmin_HotWT10{z} = [duwrtlocalmaxmin_HotWT10{z},abs(u_temp(1,peak_locs(1,end)) - u_temp(1,c))];
                     end
                 end
@@ -960,137 +460,8 @@ for z = 1:size(VF_HotWT10.z,1)
 end
 
 
-figure
-plot(duwrtlocalmaxmin_HotWT10{10},duNN_HotWT10{10},'k.')
 
-
-
-duwrtlocalmaxmin_SLPIVASL = cell(size(VF_SLPIVASL.z,1), 1);
-duNN_SLPIVASL = cell(size(VF_SLPIVASL.z,1), 1);
-
-for i = 1:size(VF_SLPIVASLuprimeshort,1)
-    duwrtlocalmaxmin_SLPIVASL{i} = cell(1, size(VF_SLPIVASL.u,2));
-    duNN_SLPIVASL{i} = cell(1, size(VF_SLPIVASL.u,2));
-end
-
-for z = 1:size(VF_SLPIVASL.z,1)
-    
-    
-    ratio_ASL = X_domain_ASL(z,:,:) ./ l0ASL;
-    ratio_ASL_squeezed = squeeze(ratio_ASL); % Convert to 52 × 80000 matrix
-    
-    % Initialize the result vector with NaN (in case no values > 1 are found)
-    unitindex_ASL = NaN(1, size(ratio_ASL_squeezed,1));
-    
-    % Loop through each column to find the first index where value > 1
-    for col = 1:size(ratio_ASL_squeezed,1)
-        idx = find(ratio_ASL_squeezed(col, :) >= 1, 1, 'first'); % Find first occurrence
-        if ~isempty(idx)
-            unitindex_ASL(col) = idx -1 ; % Store the index if found
-        end
-    end
-    
-    
-    for k = 25%1:size(unitindex_ASL,2)
-        counter = 1;
-        for s = 1 : floor(size(VF_SLPIVASLuprimeshort{z}{k},2)/unitindex_ASL(1,k))
-            % Find local maxima and minima for the current elevation
-            u_temp = VF_SLPIVASLuprimeshort{z}{k}((s-1)*unitindex_ASL(1,k)+1:(s)*unitindex_ASL(1,k));
-            [peaks, peak_locs] = findpeaks(u_temp); % Local maxima
-            [inverted_peaks, min_locs] = findpeaks(-u_temp);
-            valleys = -inverted_peaks;
-            if isempty(peak_locs) || isempty(min_locs)
-                disp(['No local maxima or minima found at elevation z = ', num2str(z), ', index s = ', num2str(s)]);
-            else
-                
-                for c = 1:unitindex_ASL(1,k)-1
-                    duNN_SLPIVASL{z}{k}(counter) = abs(u_temp(c+1)-u_temp(c));
-                    [~,i] = find(c <= peak_locs, 1, 'first');
-                    [~,j] = find(c <= min_locs, 1, 'first');
-                    
-                    if peak_locs(1,1) < min_locs(1,1)
-                        if c <= peak_locs(1,1)
-                            % Direct slope computation (signed)
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(u_temp(1,peak_locs(1,i)) - u_temp(1,c));
-                            counter = counter+1;
-                        elseif ~isempty(i) || ~isempty(j)
-                            % Compute both signed slopes
-                            slope_vals = [
-                                u_temp(1,peak_locs(1,i-1)) - u_temp(1,c),...
-                                u_temp(1,min_locs(1,j)) - u_temp(1,c)
-                                ];
-                            
-                            % Select signed slope corresponding to min(abs())
-                            [~, idx] = min(abs(slope_vals), [], 'includenan');
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(slope_vals(idx));
-                            counter = counter+1;
-                        elseif peak_locs(1,end) < min_locs(1,end)
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(u_temp(1,min_locs(1,end)) - u_temp(1,c));
-                            counter = counter+1;
-                        else
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(u_temp(1,peak_locs(1,end)) - u_temp(1,c));
-                            counter = counter+1;
-                        end
-                    else
-                        if c <= min_locs(1,1)
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(u_temp(1,min_locs(1,j)) - u_temp(1,c));
-                            counter = counter+1;
-                        elseif ~isempty(i) || ~isempty(j)
-                            slope_vals = [
-                                u_temp(1,peak_locs(1,i)) - u_temp(1,c),...
-                                u_temp(1,min_locs(1,j-1)) - u_temp(1,c)
-                                ];
-                            
-                            % Select signed slope corresponding to min(abs())
-                            [~, idx] = min(abs(slope_vals), [], 'includenan');
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(slope_vals(idx));
-                            counter = counter+1;
-                        elseif peak_locs(1,end) > min_locs(1,end)
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(u_temp(1,peak_locs(1,end)) - u_temp(1,c));
-                            counter = counter+1;
-                        else
-                            duwrtlocalmaxmin_SLPIVASL{z}{k}(counter)  = abs(u_temp(1,min_locs(1,end)) - u_temp(1,c));
-                            counter = counter+1;
-                        end
-                    end
-                    
-                end
-            end
-        end
-    end
-    
-end
-
-
-figure
-plot(duwrtlocalmaxmin_SLPIVASL{10}{25},duNN_SLPIVASL{10}{25},'k.')
-
-%% Saving & Loading
-
-VF_HotWT7 = struct(VF_HotWT7);
-VF_HotWT10 = struct(VF_HotWT10);
-
-save('SGFV_param_HotWT7_Long.mat','duwrtlocalmaxmin_HotWT7',...
-    'value_pairs_cell_HotWT7','duNN_HotWT7','VF_HotWT7','T_domain_WT7',...
-    'X_domain_WT7','res_WT7')
-
-
-save('SGFV_param_HotWT10_Long.mat','duwrtlocalmaxmin_HotWT10',...
-    'value_pairs_cell_HotWT10','duNN_HotWT10','VF_HotWT10','T_domain_WT10',...
-    'X_domain_WT10','res_WT10')
-
-save('duwrtlocalmaxmin_SLPIVASL.mat','duwrtlocalmaxmin_SLPIVASL')
-save('duNN_SLPIVASL.mat','duNN_SLPIVASL')
-
-
-load('SGFV_param_HotWT7_Long.mat')
-load('SGFV_param_HotWT10_Long.mat')
-load('duwrtlocalmaxmin_SLPIVASL.mat')
-
-
-
-
-%% Ploting WT7,WT10
+%% Plotting Fig.5 in the repository
 
 nbins = 1000;
 
@@ -1115,9 +486,6 @@ Y_centers = sqrt(Y_edges(1:end-1) .* Y_edges(2:end)); % Use geometric mean for l
 [X_grid, Y_grid] = meshgrid(X_centers, Y_centers);
 
 
-
-
-
 % Compute new total probability (should be ≈1 after renormalization)
 P_final = sum(pdf_hist_HotWT7_1_normalized .*(diff(X_edges)'* diff(Y_edges)),'all');
 disp(['Normalized Total Probability (should be ≈ 1): ', num2str(P_final)]);
@@ -1132,7 +500,7 @@ contour(X_grid, Y_grid, log(pdf_hist_HotWT7_1_normalized'), 600, 'LineWidth', 3)
 
 % Apply custom colormap
 cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+    pythonPath);
 cmap2 = flip(cmap2);
 colormap(gca, cmap2);
 caxis([-10 1])
@@ -1198,7 +566,7 @@ contour(X_grid, Y_grid, log(pdf_hist_HotWT10_2_normalized'), 600, 'LineWidth', 3
 
 % Apply custom colormap
 cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+    pythonPath);
 cmap2 = flip(cmap2);
 colormap(gca, cmap2);
 caxis([-10 1])
@@ -1559,7 +927,8 @@ xlim([0 6])
 ylim([10^-3 10^4])
 
 
-%% 3D plot
+%% Plotting Fig.6 in the Repo
+
 nbins = 1000;
 data_HotWT7_1 = [value_pairs_cell_HotWT7{1}(:,2)/VF_HotWT7.u_tau, value_pairs_cell_HotWT7{1}(:,1)/VF_HotWT7.u_tau]; % Example correlated non-Gaussian data
 [~, X_edges, Y_edges] = histcounts2(data_HotWT7_1(:,1), data_HotWT7_1(:,2), nbins);
@@ -1579,7 +948,7 @@ hold on;
 contour(X_grid, Y_grid, pdf_hist_HotWT7_1', 100, 'LineWidth', 3);
 % Load and apply plasma colormap
 cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+    pythonPath);
 cmap2 = flip(cmap2);
 % cmap2 = [1,1,1;cmap2];
 
@@ -1628,6 +997,7 @@ x_vals = (bin_edges(1:end-1) + bin_edges(2:end)) / 2;
 % Compute conditional PDF of Y
 % [x_pdf, x_vals] = ksdensity(cond_X,linspace(-6, 6, 1000));
 % trapz(x_vals,x_pdf) or trapz(bin_width,x_pdf)
+
 % Set the range for conditional X
 x_cond = -1.0;
 x_lower = -1.05;
@@ -1686,7 +1056,7 @@ view(-31.245251406131388,36.259361702723517);
 nbins = 1000;
 
 data_HotWT7_1 = [duwrtlocalmaxmin_HotWT7{1}'/(VF_HotWT7.u_tau),...
-    duNN_HotWT7{1}'/(VF_HotWT7.u_tau*res_WT7(1,1))]; % Example correlated non-Gaussian data
+    duNN_HotWT7{1}'/(VF_HotWT7.u_tau*res_WT7(1,1))]; 
 
 Y_min = min(data_HotWT7_1(:,2));
 if Y_min <= 0
@@ -1718,7 +1088,7 @@ contour(X_grid, Y_grid, log(pdf_hist_HotWT7_1_normalized'), 600, 'LineWidth', 3)
 
 % Apply custom colormap
 cmap2 = getPyPlot_cMap('plasma', [], [],...
-    '"C:\Users\ehsan010\Anaconda3\envs\Matlabpy\python.exe"');
+    pythonPath);
 cmap2 = flip(cmap2);
 colormap(gca, cmap2);
 caxis([-10 1])
@@ -1814,6 +1184,7 @@ annotation('arrow', [0.3, 0.5], [0.6, 0.8]);
 text(1, 1, '$\int$', 'Interpreter', 'latex', 'Rotation', 90, 'FontSize', 12)
 
 %%
+
 Given_min = linspace(-5, 5, 100);  % Your input value as a scalar
 mix_coeff_Given_min = zeros(size(Given_min,2),5);
 mean_mix_Given_min = zeros(size(Given_min,2),5);
