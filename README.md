@@ -77,20 +77,14 @@ git push
 -`Short_time_analysis.m:` Chope signal into the desired length. For this file, you need experimental dataset, which I have used Hotwire time resolved dataset ([Link])(https://conservancy.umn.edu/items/e2f507c9-570d-46b6-b70c-939877caf668). Fig1 and Fig2 can be generated using this file. There is no need to run this file, just use the output vectors, which are standard deviation of fluctuating velocity signal (u^{\prime}/u_{\tau}, w^{\prime}/u_{\tau}) of the chopped time-series velocity signal (,std_uprime_chopped.mat,std_wprime_chopped.mat). At the end of this file, we only use the results of the standard deviation of the chopped HotWT7. To justify our claim, I did hypothesis testing. $H_{0}:$ the difference between standard deviation is MORE than our margin $\delta$ (Not Favorable). $H_{a}:$ the difference between standard deviation is LESS than our margin $\delta$ (Favorable). I tried to reject the null hypothesis with confidence interval of 90% (significance level $\alpha=0.05$). Since we do not know about the distribution, I used non-parametric approach to test the hypothesis (Bootstraping). <br>
 $$H_{0}: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| > \delta$$
 
-$$
-H_{a}: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| <= \delta
-$$
+$$H_{a}: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| <= \delta$$
 
 
 Now, to test out alternative hypothesis, we can either use CI or P-value. If CI be in the range of ($-\delta,\delta$), we can reject the null hypothesis. For P-value, we always use the assumption of NULL HYPOTHESIS. If p-val be less than alpha, which shows the probability of occurrence of null hypothesis based on the distribution, which is always our criteria, is low-> So we can reject the $H_{0}$.<br>
 
-\[
-p_1 = \Pr(d \le -\delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \le -\delta\,\}
-\]
+$$p_1 = \Pr(d_{boot} \le -\delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \le -\delta\,\}$$
 
-\[
-p_2 = \Pr(d \ge \delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \ge \delta\,\}
-\]
+$$p_2 = \Pr(d_{boot} \ge \delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \ge \delta\,\}$$
 
 
 
