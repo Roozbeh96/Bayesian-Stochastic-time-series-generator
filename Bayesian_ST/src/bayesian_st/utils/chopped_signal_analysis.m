@@ -236,45 +236,63 @@ end
 % the statistics of HotWT7 for signal generation. But before that, we need
 % to justify our claim. To do so, I use hypothesis testing.
 %H_0: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
-%and HotWT10 have difference LESS than 0.01(margin).
-%H_1: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
-%and HotWT10 have difference MORE than 0.01(margin).
+%and HotWT10 have difference MORE than 0.01(margin)-> HotWT7 and HotWT10
+%are NOT equivalent->(NOT FAVORABLE)->|\sigma_{WT7}-\sigma_{WT10}| > margin.
+%H_a: std of chopped velocity signal at z = 5[cm](ind = 9) for both HotWT7
+%and HotWT10 have difference LESS than 0.01(margin)-> HotWT7 and HotWT10
+%are equivalent->(FAVORABLE)->|\sigma_{WT7}-\sigma_{WT10}| <= margin.
+%Always put FAVORABLE option in H_a.
 % Since we do not know about the distribution (Gaussian or other ones), I
-% used non-parametric distribution. Use bootstraping.
-% First we compute the difference between the std of the observed
-% distribution.
+% used non-parametric method for hypothesis testing. Use bootstraping
+% technique for sampling. 
 
-margin = 0.01;
+margin = 0.025;
 x = VF_HotWT7uprime_chopped{9}/VF_HotWT7.u_tau;
-s1 = std(x,0,2);
 y = VF_HotWT10uprime_chopped{9}/VF_HotWT10.u_tau;
-s2 = std(y,0,2);
 n = numel(x); m = numel(y);
-d_obs = abs(s1 - s2);
 
-% Now, let us combine all the samples of x and y, named z, and do the
-% bootstraping to generate samples of xb and yb and compute the difference
-% between the stds. I repeated this scenario 20,000 times.
-z = [x,y];
-N = numel(z);
+
+% Now, let us bootstraping to from x, and y to generate samples of xb and 
+% yb and compute the difference between the stds (d_boot). Having d_boot,
+% we can have the distribution of the standard deviation difference. Using
+% this distribution, we can find the confidence interval as well. I 
+% repeated this scenario 20,000 times. Distribution of d_boot is our 
+% criterion because it is calculated based on samples which is organic.
+
+
 B = 20000;
 d_boot = zeros(B,1);
 for b = 1:B
-
-    xb = z(randi(N, n, 1));
-    yb = z(randi(N, m, 1));
-    d_boot(b) = abs(std(xb,0,2) - std(yb,0,2));
+    xb = x(randi(n, floor(n/10), 1));
+    yb = y(randi(m, floor(m/10), 1));
+    d_boot(b) = std(xb,0,2) - std(yb,0,2);
 end
 
-% Now let us compute the p-value. 
+alpha = 0.05; % significance level
 
-pval = mean(d_boot >= d_obs - margin)
-alpha = 0.05;
+% Percentile CI for d_boot at level (1-2*alpha). This means that, based on
+% the distribution, with the probability of (1-2*alpha)*100 percent, the
+% difference between standard deviation is between [lo hi](BASED ON 
+% DISTRIBUTION). As the alpha increases, the confidence interval reduces
+% and the probability of rejecting H0 increases. if CI be in the range of
+% (-margin,margin)->Favorable case-> we can reject the null hypothesis. 
+% If 'reject_H0 = 1' means we can reject the null-hypothesis.
 
-ci = prctile(d_boot,[2.5,97.5]);
-disp(struct('s1',s1,'s2',s2,'d_obs',d_obs,'margin',margin,...
-             'p_value',pval,'ci_boot',ci,...
-             'reject_H0',pval<alpha))
+lo = prctile(d_boot, 100*alpha);
+hi = prctile(d_boot, 100*(1-alpha));
+fprintf('reject_H0: %d\n',lo>=-margin & hi<=margin)
+
+% Other approach than we can test our hypothesis, is using p-value.
+% Calculate the p-value based on the assumption of NULL HYPOTHESIS(H_0). If
+% p-val be less than alpha, which shows the probability of occurrence of
+% null hypothesis based on the distribution, which is always our criteria,
+% is low-> So we can reject the H_0.
+
+pval_lo = mean(d_boot < -margin);
+pval_hi = mean(d_boot > margin);
+
+fprintf('reject_H0: %d\n',pval_lo < alpha & pval_hi< alpha)
+
 %% Interpolation to generated field
 
 
