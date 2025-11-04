@@ -80,20 +80,7 @@ $$
 H_{0}: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| > \delta
 $$
 
-$$
-H_{a}: |\sigma_{choppedWT7} - \sigma_{choppedWT10}| <= \delta
-$$
 
-
-Now, to test out alternative hypothesis, we can either use CI or P-value. If CI be in the range of ($-\delta,\delta$), we can reject the null hypothesis. For P-value, we always use the assumption of NULL HYPOTHESIS. If p-val be less than alpha, which shows the probability of occurrence of null hypothesis based on the distribution, which is always our criteria, is low-> So we can reject the $H_{0}$.<br>
-
-\[
-p_1 = \Pr(d \le -\delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \le -\delta\,\}
-\]
-
-\[
-p_2 = \Pr(d \ge \delta) \approx \frac{1}{B} \sum_{b=1}^{B} \mathbf{1}\{\,d_b \ge \delta\,\}
-\]
 
 
 
