@@ -303,19 +303,19 @@ lambda_T = 0.01;
 VF_GenWT7_z = z_min:0.4*lambda_T/10:z_max + 0.4*lambda_T/10
 
 
-std_uprime_chopped = zeros(size(VF_GenWT7_z,2),1);
-std_wprime_chopped = zeros(size(VF_GenWT7_z,2),1);
+std_uprime_O_u_tau_chopped = zeros(size(VF_GenWT7_z,2),1);
+std_wprime_O_u_tau_chopped = zeros(size(VF_GenWT7_z,2),1);
 
 
 for z = 1:size(VF_GenWT7_z,2) 
     [r]=find(VF_GenWT7_z(z)<=VF_HotWT7.z,1,'first');
-    std_uprime_chopped(z) = std_uprime_O_u_tau_chopped_HotWT7(r);
-    std_wprime_chopped(z) = std_wprime_O_u_tau_chopped_HotWT7(r);
+    std_uprime_O_u_tau_chopped(z) = std_uprime_O_u_tau_chopped_HotWT7(r);
+    std_wprime_O_u_tau_chopped(z) = std_wprime_O_u_tau_chopped_HotWT7(r);
 end
 
 
 %% Saving
 
-save('std_uprime_chopped.mat','std_uprime_chopped')
-save('std_wprime_chopped.mat','std_wprime_chopped')
+save('std_uprime_O_u_tau_chopped.mat','std_uprime_O_u_tau_chopped')
+save('std_uprime_O_u_tau_chopped.mat','std_wprime_O_u_tau_chopped')
 
