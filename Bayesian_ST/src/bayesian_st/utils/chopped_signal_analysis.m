@@ -296,11 +296,11 @@ fprintf('reject_H0: %d\n',pval_lo < alpha & pval_hi< alpha)
 %% Interpolation to generated field
 
 
-z_min = 50*VF_HotWT7.nu / VF_HotWT7.u_tau
-z_max = 0.25*VF_HotWT7.delta
+z_min = 50*VF_HotWT7.nu / VF_HotWT7.u_tau;
+z_max = 0.25*VF_HotWT7.delta;
 lambda_T = 0.01;
 
-VF_GenWT7_z = z_min:0.4*lambda_T/10:z_max + 0.4*lambda_T/10
+VF_GenWT7_z = z_min:0.4*lambda_T/10:z_max + 0.4*lambda_T/10;
 
 
 std_uprime_O_u_tau_chopped = zeros(size(VF_GenWT7_z,2),1);
@@ -317,5 +317,5 @@ end
 %% Saving
 
 save('std_uprime_O_u_tau_chopped.mat','std_uprime_O_u_tau_chopped')
-save('std_uprime_O_u_tau_chopped.mat','std_wprime_O_u_tau_chopped')
+save('std_wprime_O_u_tau_chopped.mat','std_wprime_O_u_tau_chopped')
 
