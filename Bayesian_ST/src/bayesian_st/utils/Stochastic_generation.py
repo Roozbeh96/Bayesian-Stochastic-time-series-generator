@@ -19,6 +19,7 @@ class stochastic_generation:
         U_profile = self.u_tau / kappa * np.log(self.z / self.z_0)
         self.u = np.tile(U_profile[:, np.newaxis, np.newaxis],
                          (1, np.shape(self.x)[0], numb_frame))
+        self.w = np.zeros_like(self.u)
         
     def Bayesian_sto(self):
 
