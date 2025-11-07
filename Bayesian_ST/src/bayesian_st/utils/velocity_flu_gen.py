@@ -31,7 +31,15 @@ def velocity_fluctuating_generation(obj):
     Given_dist_NLmin_NLmax_model = MDN(1,1,Number_of_Gaussians)
     Given_dist_NLmin_NLmax_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_dist_NLmin_NLmax_model_Long.pth'))
     Given_dist_NLmin_NLmax_model.eval()
-
+    
+    if os.path.exists(file_path):
+        print("Loading existing array...")
+        data = np.load(file_path)
+    else:
+        print("File not found — computing and saving...")
+        # Your code that generates the array
+        data = np.random.randn(100, 100)
+        np.save(file_path, data)
 
     size_minmaxvec = 1e6
     minmaxvec = np.zeros((size_minmaxvec,2))
