@@ -91,6 +91,10 @@ If $p_1<\alpha \\;\\&\\; p_2<\alpha$ we reject the $H_{0}$.<br>
 - `defferential_analysis_chopped.m:` To generate the spatio/temporal velocity signal, we need joint distribution of extremums (Local min, Local max) points (Fig4). Furthermore, we need the joint distribution of the gradient of each time series sample point w.r.t. next point sample and the minimum distance to the local extremums (Fig5). The conditional distribution is shown in Fig6.
 
 
+- `MDN.ipynb:` In this jupyter notebook file, I started reproducing the result of the [Mixture Density Network](https://publications.aston.ac.uk/id/eprint/373/1/NCRG_94_004.pdf) algorithm. Then generated samples with exponential distribution and use MDN to fit the samples. This exercise was done to see the performance of the model on the exponentially distributed sample. Since gradient of sample points w.r.t. next neighboring sample point (Fig6.) has exponential distribution. Then in the following, I read the samples exported from `defferential_analysis_chopped.m` and `Short_time_analysis.m` and used MDN model to fit to the distribution.
+
+- `velocity_flu_gen.py:`
+
 
 
 
