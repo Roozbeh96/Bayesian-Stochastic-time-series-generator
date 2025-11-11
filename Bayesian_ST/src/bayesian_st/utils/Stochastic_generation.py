@@ -1,5 +1,5 @@
 import numpy as np
-from utils.velocity_flu_gen import velocity_fluctuating_generation
+from src.bayesian_st.utils.velocity_flu_gen import velocity_fluctuating_generation
 
 class stochastic_generation:
     def __init__(self, *, u_tau, z_0, ks, delta, lambda_T, 

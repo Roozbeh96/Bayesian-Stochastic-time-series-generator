@@ -10,8 +10,8 @@ import h5py
 
 
 # Define the Mixture Density Network
-class MDN(nn.Module):
-    def __init__(self, input_dim=1, output_dim=1, num_gaussians=5):
+class MDN_model(nn.Module):
+    def __init__(self, *, input_dim=1, num_gaussians=5):
         super(MDN, self).__init__()
         self.num_gaussians = num_gaussians
         self.fc = nn.Sequential(

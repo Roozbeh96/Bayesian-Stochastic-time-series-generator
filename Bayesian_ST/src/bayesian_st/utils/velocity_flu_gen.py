@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
-from Bayesian_ST.src.bayesian_st.Given_max_model import Given_max_model
-from Given_min_model import MDN, Given_min_model
+from src.bayesian_st.utils.MDN import MDN_model as MDN
+import os
 from scipy.stats import norm
 import torch
 
@@ -18,18 +18,22 @@ def velocity_fluctuating_generation(obj):
     '''
     Number_of_Gaussians = 5
     rho_uw = -0.3 
-    Given_min_model = MDN(1,1,Number_of_Gaussians)
-    Given_min_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_max_model_Long.pth'))
+    path_ = os.getcwd()
+    path_ = os.path.join(path_, "Given_max_model.pth")
+    Given_min_model = MDN(input_dim= 1,num_gaussians=Number_of_Gaussians)
+    Given_min_model.load_state_dict(torch.load(path_))
     Given_min_model.eval()
 
-
-    Given_max_model = MDN(1,1,Number_of_Gaussians)
-    Given_max_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_max_model_Long.pth'))
+    path_ = os.getcwd()
+    path_ = os.path.join(path_, "Given_min_model.pth")
+    Given_max_model = MDN(input_dim=1,num_gaussians=Number_of_Gaussians)
+    Given_max_model.load_state_dict(torch.load(path_))
     Given_max_model.eval()
 
-
-    Given_dist_NLmin_NLmax_model = MDN(1,1,Number_of_Gaussians)
-    Given_dist_NLmin_NLmax_model.load_state_dict(torch.load('G:\My Drive\Research\VFfeaturedVorX\Given_dist_NLmin_NLmax_model_Long.pth'))
+    path_ = os.getcwd()
+    path_ = os.path.join(path_, "Given_dist_NLmin_NLmax_model_Long.pth")  
+    Given_dist_NLmin_NLmax_model = MDN(input_dim=1,num_gaussians=Number_of_Gaussians)
+    Given_dist_NLmin_NLmax_model.load_state_dict(torch.load(path_))
     Given_dist_NLmin_NLmax_model.eval()
     
     if os.path.exists(file_path):
