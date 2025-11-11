@@ -9,6 +9,8 @@ VF_HotWT7.mat
 VF_HotWT10.mat
 jpdfs_HotWT10.mat
 jpdfs_HotWT7.mat
+pyproject.toml
+poetry.lock
 
 # C extensions
 *.so
