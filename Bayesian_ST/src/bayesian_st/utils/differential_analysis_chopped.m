@@ -82,16 +82,16 @@ end
 % The required joint distributions for making the signal can be load here.
 % Otherwise, you can run next two sections to make them.
 
-VF_HotWT7 = struct(VF_HotWT7);
-VF_HotWT10 = struct(VF_HotWT10);
+VF_HotWT7_u_tau = VF_HotWT7.u_tau;
+VF_HotWT10_u_tau = VF_HotWT10.u_tau;
 
 save('jpdfs_HotWT7.mat','duwrtlocalmaxmin_HotWT7',...
-    'value_pairs_cell_HotWT7','duNN_HotWT7','VF_HotWT7','T_domain_WT7',...
+    'value_pairs_cell_HotWT7','duNN_HotWT7','VF_HotWT7_u_tau','T_domain_WT7',...
     'X_domain_WT7','res_WT7')
 
 
 save('jpdfs_HotWT10.mat','duwrtlocalmaxmin_HotWT10',...
-    'value_pairs_cell_HotWT10','duNN_HotWT10','VF_HotWT10','T_domain_WT10',...
+    'value_pairs_cell_HotWT10','duNN_HotWT10','VF_HotWT10_u_tau','T_domain_WT10',...
     'X_domain_WT10','res_WT10')
 
 
