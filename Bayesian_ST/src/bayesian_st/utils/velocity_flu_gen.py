@@ -47,6 +47,7 @@ def velocity_fluctuating_generation(obj):
         minind = 0
         maxind = 0
         # take samples from distribution of u' to start the process(Fig3(b))
+        
         start = np.random.normal(loc = 0, scale = 1)*std_uprime_O_u_tau_chopped[0,0]
         sample = np.random.normal(loc = 0, scale = 1)*std_uprime_O_u_tau_chopped[0,0]
         if start > sample:
